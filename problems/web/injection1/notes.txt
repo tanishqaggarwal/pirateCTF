@@ -1,0 +1,6 @@
+Problem Name: Injection 1
+
+This is supposed to be a very basic injection problem, the standard username = x' or 1 = 1 attack. Ez pz.
+Oh, also, as a slight twist, we'll use GQL instead of SQL.
+
+Flag: ez_pz_injection

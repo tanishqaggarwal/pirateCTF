@@ -1,0 +1,5 @@
+Problem Name: Packet Analysis 1
+
+The user is given a packet capture to analyze. There's no trick here: search for the word "flag" in Wireshark and right next to it will be the flag.
+
+Flag: learn_wireshark_for_future_problems

@@ -1,0 +1,5 @@
+Problem Name: An Exercise in Deminification
+
+This is a particularly evil problem: figure out what some compressed javascript contains, and figure out what function to execute with what inputs, in order to get the flag.
+
+Flag: hope_you_had_fun_deminifying

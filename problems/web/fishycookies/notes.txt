@@ -1,0 +1,7 @@
+Problem Name: Fishy Cookies
+
+The idea is that there's a cookie called "FISHYCOOKIE" on the user's machine. This cookie is a JSON string that contains information about the user, such as the username and user-level (default: "1", admin: "over9000"). The cookie is encrypted, but analysis of the login page reveals that there's an online RESTful service that is called to by javascript that handles encryption and decryption. The javascript openly sends information to this online service to encrypt/decrypt, and the service sends back the encrypted/decrypted data. With this, the user can modify his stored cookie to trick the online system and gain admin level privileges, thus getting access to the admin page containing the flag.
+
+Implementation details: implemented in an appengine server separate from the scoring server.
+
+Flag: you_better_not_encrypt_your_stuff_like_this

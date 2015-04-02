@@ -1,0 +1,5 @@
+Problem Name: I Hope You Know ASM
+
+A basic exercise in reading some x86 assembly. The assembly will initially populate some registers with a few integer values and do some complicated things with them. Essentially, its shifting bits around so that when combined, the three registers will contain "asm\x00", "_is\x00" "_ez\x00".
+
+Flag: asm_is_ez

@@ -1,0 +1,47 @@
+application: piratectf-problemserver
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: .*
+  script: main.application
+
+#The below has been done in order to prevent access to static/html
+
+- url: /static/css
+  static_dir: static/css
+  secure: always
+
+- url: /static/js
+  static_dir: static/js
+  secure: always
+
+- url: /static/images
+  static_dir: static/images
+  secure: always
+
+- url: /static/files
+  static_dir: static/files
+  secure: always
+
+- url: /static/fonts
+  static_dir: static/fonts
+  secure: always
+
+- url: /static/includes
+  static_dir: static/includes
+  secure: always
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+- name: pycrypto
+  version: latest

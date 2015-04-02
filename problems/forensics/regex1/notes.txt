@@ -1,0 +1,7 @@
+Problem Name: Regular Expressions 1
+
+Provides a large file that's seemingly filled with meaningless gibberish.
+A description of how you can find the flag.
+The hint is to use regex.
+
+Flag: isnt_regex_fantastic

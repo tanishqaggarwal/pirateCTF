@@ -1,0 +1,5 @@
+Problem Name: Injection 2
+
+Slightly harder injection problem. There isn't actually any admin user; the competitor has to figure this out by inspection and then create an admin user by adjoining multiple statements.
+
+flag: some_injection_aint_so_ez

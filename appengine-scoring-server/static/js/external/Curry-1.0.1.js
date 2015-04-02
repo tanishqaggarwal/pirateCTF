@@ -1,0 +1,1 @@
+function curry(r){return function(){var n=curry.args(arguments),t=arguments.callee,u=this;return n.length>=r.length?r.apply(u,n):function(){return t.apply(u,n.concat(curry.args(arguments)))}}}curry.args=function(r){return Array.prototype.slice.call(r)},Function.prototype.curry=function(){return curry(this)};

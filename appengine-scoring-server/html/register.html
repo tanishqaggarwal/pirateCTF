@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html class="full" lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A unique CTF For high schoolers.">
+    <meta name="author" content="">
+
+    <title>Register | PirateCTF 2015</title>
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body style = "margin-top: 50px;">
+
+    <div id = "navigation"></div>
+
+<div class = "container">
+    <div class = "row">
+        <h1 class = "header">Register</h1>
+        <p>All fields below are required except for "Address Line 2".</p> <!--Show conditionally based on javascript loading the entire form -->
+    </div>
+    <div class = "row">
+        <div class = "row hidden bg-success" id = "success">
+            <p>You have been logged in and will shortly be redirected to "Problems". <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></p>
+        </div>
+        <div class = "row hidden bg-danger" id = "fail">
+            <p>The teamname you entered is incorrect or the passphrase does not match the teamname entered. <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></p>
+        </div>
+    </div>
+    <div class = "row">
+        <div class = "center-block">
+            <form class="form-horizontal">
+            <!-- Multiple Radios -->
+            <div class="control-group">
+              <label class="control-label" for="registrationmode">I Am Registering A: </label>
+              <div class="controls">
+                <label class="radio" for="registrationmode-0">
+                  <input type="radio" name="registrationmode" id="teamselection" value="team" checked="checked">
+                  Team
+                </label>
+                <label class="radio" for="registrationmode-1">
+                  <input type="radio" name="registrationmode" id="classselection" value="class">
+                  Class
+                </label>
+              </div>
+            </div>
+
+            <div id = "teamregistration" class = "hidden">
+              <!-- Multiple Radios -->
+              <div class="control-group">
+                <label class="control-label" for="teamtype">Team Type</label>
+                <div class="controls">
+                  <label class="radio" for="teamtype-0">
+                    <input type="radio" name="teamtype" id="teamtype-0" value="Observer" checked="checked">
+                    Observer
+                  </label>
+                  <label class="radio" for="teamtype-1">
+                    <input type="radio" name="teamtype" id="teamtype-1" value="Competitive">
+                    Competitive
+                  </label>
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="teamname">Team Name</label>
+                <div class="controls">
+                  <input id="teamname" name="teamname" type="text" placeholder="Team Name" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Password input-->
+              <div class="control-group">
+                <label class="control-label" for="passphrase">Choose a Strong Team Passphrase</label>
+                <div class="controls">
+                  <input id="passphrase" name="passphrase" type="password" placeholder="P@$$phr@se" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Password input-->
+              <div class="control-group">
+                <label class="control-label" for="confirm_team_passphrase">Confirm Team Passphrase</label>
+                <div class="controls">
+                  <input id="confirm_team_passphrase" name="confirm_team_passphrase" type="password" placeholder="Confirm P@a$$phr@se" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="school">School Name</label>
+                <div class="controls">
+                  <input id="school" name="school" type="text" placeholder="School Name" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="adult_coordinator">Adult Coordinator</label>
+                <div class="controls">
+                  <input id="adult_coordinator" name="adult_coordinator" type="text" placeholder="Email address" class="input-xlarge" required="">
+                  <p class="help-block">Please enter an email address of a school teacher.</p>
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="address_line1">Address Line 1</label>
+                <div class="controls">
+                  <input id="address_line1" name="address_line1" type="text" placeholder="1 Infinite Loop" class="input-xlarge" required="">
+                  <p class="help-block">This is the address to which prizes will be sent, if your team is eligible.</p>
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="address_line2">Address Line 2</label>
+                <div class="controls">
+                  <input id="address_line2" name="address_line2" type="text" placeholder="(This isn't necessary)" class="input-xlarge">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="city">City</label>
+                <div class="controls">
+                  <input id="city" name="city" type="text" placeholder="Cupertino" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Select Basic -->
+              <div class="control-group">
+                <label class="control-label" for="state">State</label>
+                <div class="controls">
+                  <select id="state" name="state" class="input-xlarge">
+                    <option>Alabama</option>
+                    <option>Alaska</option>
+                    <option>Arizona</option>
+                    <option>Arkansas</option>
+                    <option>California</option>
+                    <option>Colorado</option>
+                    <option>Connecticut</option>
+                    <option>Delaware</option>
+                    <option>Florida</option>
+                    <option>Georgia</option>
+                    <option>Hawaii</option>
+                    <option>Idaho</option>
+                    <option>Illinois</option>
+                    <option>Indiana</option>
+                    <option>Iowa</option>
+                    <option>Kansas</option>
+                    <option>Kentucky</option>
+                    <option>Louisiana</option>
+                    <option>Maine</option>
+                    <option>Maryland</option>
+                    <option>Massachusetts</option>
+                    <option>Michigan</option>
+                    <option>Minnesota</option>
+                    <option>Mississippi</option>
+                    <option>Missouri</option>
+                    <option>Montana</option>
+                    <option>Nebraska</option>
+                    <option>Nevada</option>
+                    <option>New Hampshire</option>
+                    <option>New Jersey</option>
+                    <option>New Mexico</option>
+                    <option>New York</option>
+                    <option>North Carolina</option>
+                    <option>North Dakota</option>
+                    <option>Ohio</option>
+                    <option>Oklahoma</option>
+                    <option>Oregon</option>
+                    <option>Pennsylvania</option>
+                    <option>Rhode Island</option>
+                    <option>South Carolina</option>
+                    <option>South Dakota</option>
+                    <option>Tennessee</option>
+                    <option>Texas</option>
+                    <option>Utah</option>
+                    <option>Vermont</option>
+                    <option>Virginia</option>
+                    <option>Washington</option>
+                    <option>West Virginia</option>
+                    <option>Wisconsin</option>
+                    <option>Wyoming</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="zipcode">Zipcode</label>
+                <div class="controls">
+                  <input id="zipcode" name="zipcode" type="text" placeholder="95014" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="phone">Phone Number</label>
+                <div class="controls">
+                  <input id="phone" name="phone" type="text" placeholder="Someone's phone number." class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+            </div>
+            <!-- Password input-->
+            <div class="control-group">
+              <label class="control-label" for="classname">Class Name</label>
+              <div class="controls">
+                <input id="classname" name="classname" type="password" placeholder="Class Name" class="input-xlarge" required="">
+                
+              </div>
+            </div>
+
+            <div id = "classregistration" class = "hidden">
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classpassphrase">Choose a Strong Class Passphrase</label>
+                <div class="controls">
+                  <input id="classpassphrase" name="classpassphrase" type="text" placeholder="P@$$phr@se" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="confirm_class_passphrase">Confirm Class Passphrase</label>
+                <div class="controls">
+                  <input id="confirm_class_passphrase" name="confirm_class_passphrase" type="text" placeholder="Confirm P@a$$phr@se" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classadult_school">Class School</label>
+                <div class="controls">
+                  <input id="classadult_school" name="classadult_school" type="text" placeholder="School Name" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classadult_email">Class Teacher Email</label>
+                <div class="controls">
+                  <input id="classadult_email" name="classadult_email" type="text" placeholder="handsomejoe@someschool.org" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classadult_addressline1">School Address Line 1</label>
+                <div class="controls">
+                  <input id="classadult_addressline1" name="classadult_addressline1" type="text" placeholder="1 Infinite Loop" class="input-xlarge" required="">
+                  <p class="help-block">This is the address to which certificates for team participation will be sent. If you would like, you can use a different address.</p>
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classadult_addressline2">School Address Line 2</label>
+                <div class="controls">
+                  <input id="classadult_addressline2" name="classadult_addressline2" type="text" placeholder="(This isn't necessary)" class="input-xlarge">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classadult_city">City</label>
+                <div class="controls">
+                  <input id="classadult_city" name="classadult_city" type="text" placeholder="Cupertino" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Select Basic -->
+              <div class="control-group">
+                <label class="control-label" for="classadult_state">State</label>
+                <div class="controls">
+                  <select id="classadult_state" name="classadult_state" class="input-xlarge">
+                    <option>Alabama</option>
+                    <option>Alaska</option>
+                    <option>Arizona</option>
+                    <option>Arkansas</option>
+                    <option>California</option>
+                    <option>Colorado</option>
+                    <option>Connecticut</option>
+                    <option>Delaware</option>
+                    <option>Florida</option>
+                    <option>Georgia</option>
+                    <option>Hawaii</option>
+                    <option>Idaho</option>
+                    <option>Illinois</option>
+                    <option>Indiana</option>
+                    <option>Iowa</option>
+                    <option>Kansas</option>
+                    <option>Kentucky</option>
+                    <option>Louisiana</option>
+                    <option>Maine</option>
+                    <option>Maryland</option>
+                    <option>Massachusetts</option>
+                    <option>Michigan</option>
+                    <option>Minnesota</option>
+                    <option>Mississippi</option>
+                    <option>Missouri</option>
+                    <option>Montana</option>
+                    <option>Nebraska</option>
+                    <option>Nevada</option>
+                    <option>New Hampshire</option>
+                    <option>New Jersey</option>
+                    <option>New Mexico</option>
+                    <option>New York</option>
+                    <option>North Carolina</option>
+                    <option>North Dakota</option>
+                    <option>Ohio</option>
+                    <option>Oklahoma</option>
+                    <option>Oregon</option>
+                    <option>Pennsylvania</option>
+                    <option>Rhode Island</option>
+                    <option>South Carolina</option>
+                    <option>South Dakota</option>
+                    <option>Tennessee</option>
+                    <option>Texas</option>
+                    <option>Utah</option>
+                    <option>Vermont</option>
+                    <option>Virginia</option>
+                    <option>Washington</option>
+                    <option>West Virginia</option>
+                    <option>Wisconsin</option>
+                    <option>Wyoming</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classadult_zipcode">Zipcode</label>
+                <div class="controls">
+                  <input id="classadult_zipcode" name="classadult_zipcode" type="text" placeholder="95014" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+
+              <!-- Text input-->
+              <div class="control-group">
+                <label class="control-label" for="classadult_phonenumber">School Phone Number</label>
+                <div class="controls">
+                  <input id="classadult_phonenumber" name="classadult_phonenumber" type="text" placeholder="School Phone Number" class="input-xlarge" required="">
+                  
+                </div>
+              </div>
+            </div>              
+            <!-- Button -->
+            <div class="control-group">
+              <label class="control-label" for="submit"></label>
+              <div class="controls">
+                <button id="submit" name="submit" class="btn btn-success">Register</button>
+              </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <div id = "footer"></div>
+</body>
+
+<script src="/static/js/external/jquery-1.11.2.min.js"></script>
+<script src="/static/js/external/bootstrap.min.js"></script>
+<script src = "/static/js/custom/production/navload.js"></script>
+<script>
+//In this area, write a script to 0) animate the form based on input, 1) validate the form, and 2) submit the form.
+</script>
+</html>
