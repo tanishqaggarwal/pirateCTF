@@ -11,10 +11,10 @@ Structure
 --------------------
 
 This repository is divided into four folders. 
-- The first folder contains the appengine problem server, which hosts various web challenges and is NOT the scoring server. If you're implementing your own CTF, this folder can be deleted as it's pirateCTf-specific.
+- The first folder contains the appengine problem server, which hosts various web challenges and is NOT the scoring server. If you're implementing your own CTF, this folder can be deleted as it's pirateCTF-specific.
 - The second folder contains the *appengine scoring server*, which is probably what you're concerned with mostly. It contains a Google App Engine Python 2.7 webapp2 application that can be run as-is and configured through a web browser.
 - The third folder contains the *shell server implementation*, which includes a account creation Python service module. In this folder, setup.py sets up various things such as a shellinabox system for SSHing into the shell server.
-- The fourth folder contains various documents related to pirateCTF 2015 problems, including skeletons of solutions, code and writeups. If you're implementing your own CTF, this folder can be deleted as it's pirateCTf-specific.
+- The fourth folder contains various documents related to pirateCTF 2015 problems, including skeletons of solutions, code and writeups. If you're implementing your own CTF, this folder can be deleted as it's pirateCTF-specific.
 
 Usage
 -------------------
