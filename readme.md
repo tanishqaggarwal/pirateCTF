@@ -23,7 +23,7 @@ Usage
 
 The appengine scoring server is well-documented with comments and is fairly self-explanatory. Set up an App Engine application, deploy it with the given code and it will run fine as-is. Your own custom stylings are easy to apply, and there is an admin console to facilitate most tasks.
 
-If you're confused about the problem_parents and problem_children properties of the Problems model, we strongly encourage you to go to http://piratectf.com and check out our problem layout, and consider using it for your own CTF. If not, you have two options: either refactoring our code completely, or initializing the problem_parent to a list containing one element: the name of the previous problem and the problem_children to a list containing one element which is the name of the problem following after.
+If you're confused about the problem_parents and problem_children properties of the Problems model, we strongly encourage you to go to http://piratectf.com and check out our problem layout, and consider using it for your own CTF. If not, you have two options: either refactoring our code completely, or initializing the problem_parent to a list containing one element: the name of the previous problem and the problem_children to a list containing one element which is the name of the problem following after. Additionally, in grader.py, remove the code that checks if the previous problem is solved (should be documented by comments pretty clearly).
 
 We also implement a mechanism where users can buy problem flags for points. To let this mechanism render no effect on scoring, you can set the problem buy point value to the same thing as the actual problem point value, so that any users that buy flags receive 0 points.
 
