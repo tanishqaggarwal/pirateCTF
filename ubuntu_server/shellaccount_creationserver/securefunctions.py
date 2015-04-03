@@ -9,11 +9,6 @@ from Crypto import Random
 ENCRYPTION_SECRET = "P!r@teCtF__sh@dy"
 PASS_HASH_SECRET = "n0t_sh@d1er_th@n_sh@n!sh"
 
-GITHUB_OAUTH_TOKEN = "afcae91fd1aaf0697c4d07e0c0c18ea7ea76e033"
-GITHUB_USERNAME = "tanishqaggarwal"
-
-ADMIN_PASSWORD = "thepiratectf1"
-
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS) 
 unpad = lambda s : s[:-ord(s[len(s)-1:])]
