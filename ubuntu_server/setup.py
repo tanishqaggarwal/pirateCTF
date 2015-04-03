@@ -18,10 +18,9 @@ os.system("curl -u \" " + return_github_username() + "\" --data '{\"title\":\"pi
 
 #get project files and unzip them here
 os.system("git clone https://github.com/tanishqaggarwal/pirateCTF.git")
-#os.system("tar -xzvf + " + os.path.join(os.path.dirname(__file__),"shell-ctf-platform.zip")) #check syntax
 
 #install webapp2 dependencies
-os.system("sudo apt-get install -y python-pip") #find option to automatically say "Y" at the install prompt
+os.system("sudo apt-get install -y python-pip")
 os.system("sudo apt-get --upgrade pip")
 os.system("sudo pip install WebOb")
 os.system("sudo pip install paste")
@@ -59,9 +58,6 @@ for root,dirs,files in os.walk("/home/problems"):
 	os.system("sudo chown -hR " + username + ":problemsu " + path)
 	os.system("sudo chmod -R 640 " + path + "/flag")
 	os.system("sudo chmod -R 755 " + path + "/executable")
-	os.system("sudo chmod -R 744 " + path + "/source")
-
-#for folder in shell_problems:
-#get folder name, create user and add him to the group 
+	os.system("sudo chmod -R 744 " + path + "/source") 
 
 #on a random note, its insane how much the "os" module can do. It literally set up the entire system for me!
