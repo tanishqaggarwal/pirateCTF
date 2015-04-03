@@ -31,7 +31,12 @@ Finally, if you do not want your users to absolutely have to submit an explanati
 
 ### Shell Server
 
-To use the shell server, simply download all of the files in the ubuntu_server folder and run setup.py. We're not sure about other distributions, but we know that setup.py should work on a clean Ubuntu 14.04 installation.
+To use the shell server, simply run setup.py in the ubuntu_server folder. 
+
+#### Currently-known supported systems by setup.py
+The following is a list of systems that are currently known to work with setup.py in the ubuntu_server folder. If you find that the script works in other Ubuntu distributions, please contact us to update this readme. Note that the below list applies only to clean installations.
+
+- Ubuntu Server 14.04
 
 Contributions
 -------------------
