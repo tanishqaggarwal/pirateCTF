@@ -51,14 +51,13 @@ os.system("sudo addgroup problemsu")
 os.system("sudo useradd -G problemsu -p " + encrypt("problemsensei") + " problemsensei") #The OP problem sensei. Will probably never need this account but its fun to add stuff in like this.
 
 #set up permissions for each problem folder
-for root,dirs,files in os.walk("/home/problems"):
-	name = root
-	path = "/home/problems" + name
+for dirname,dirs,files in os.walk("/home/problems"):
+	path = "/home/problems" + dirname
 	username = name + "_probsu"
 	os.system("sudo useradd -G problemsu -p " + encrypt(name + "password") + " " + username)
 	os.system("sudo chown -hR " + username + ":problemsu " + path)
-	os.system("sudo chmod -R 600 " + path + "/flag")
-	os.system("sudo chmod -R 755 " + path + "/executable")
-	os.system("sudo chmod -R 744 " + path + "/source") 
+	os.system("sudo chmod -R 1600 " + path + "/flag")
+	os.system("sudo chmod -R 5755 " + path + "/executable")
+	os.system("sudo chmod -R 1744 " + path + "/source") 
 
 #on a random note, its insane how much the "os" module can do. It literally set up the entire system for me!
