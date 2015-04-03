@@ -1,4 +1,5 @@
 #Sets up shell server with the account creation HTTP server, as well as shellinabox. Sets up the problems with the appropriate permissions.
+#IMPORTANT: check os path syntax.
 
 import os
 from shellaccount_creationserver.securefunctions import *
@@ -44,7 +45,7 @@ os.system("sudo groupadd pirates")
 os.system("sudo useradd -G pirates -p " + encrypt("masterpiratepassword") + " masterpirate") #might need this, don't need it right now. I just added it just for fun.
 
 #copy problems from shell_problems folder to the /home directory
-os.system("sudo cp -r " + os.path.join(os.path.dirname(__file__),"piratectf/ubuntu_server/shell_problems") + " /home/problems/") #check os path syntax
+os.system("sudo cp -r " + os.path.join(os.path.dirname(__file__),"piratectf/ubuntu_server/shell_problems") + " /home/problems/")
 
 #create problemsu group, create user in problemsu for each binary exploit problem
 os.system("sudo addgroup problemsu")
