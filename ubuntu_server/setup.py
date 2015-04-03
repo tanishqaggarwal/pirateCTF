@@ -17,7 +17,7 @@ os.system("curl -H \"Authorization: token " + return_github_oauth_token() + "\" 
 os.system("curl -u \" " + return_github_username() + "\" --data '{\"title\":\"piratectf-authentication\",\"key\":\"" + publickey + "\"}' https://api.github.com/user/keys")
 
 #get project files and unzip them here
-os.system("git clone https://github.com/tanishqaggarwal/pirateCTF.git")
+os.system("git clone https://github.com/tanishqaggarwal/pirateCTF.git /home/piratectfrepository")
 
 #install webapp2 dependencies
 os.system("sudo apt-get install -y python-pip")
@@ -29,10 +29,10 @@ os.system("sudo pip install pycrypto")
 os.system("sudo pip install jinja2")
 
 #start webapp2 server
-os.system("python " + os.path.join(os.path.dirname(__file__),"piratectf/ubuntu_server/shellaccount_creationserver/main.py")) #starts webapp2 shell account creation server
+os.system("python " + os.path.join(os.path.dirname(__file__),"/home/piratectfrepository/piratectf/ubuntu_server/shellaccount_creationserver/main.py")) #starts webapp2 shell account creation server
 
 #Configure message of the day
-os.system("sudo cp " + os.path.join(os.path.dirname(__file__),"piratectf/miscellaneous_files/motd") + " /etc/motd")
+os.system("sudo cp " + os.path.join(os.path.dirname(__file__),"/home/piratectfrepository/piratectf/miscellaneous_files/motd") + " /etc/motd")
 os.system("sudo chmod -x /etc/update-motd.d/*")
 
 #install shellinabox and configure it
@@ -41,10 +41,10 @@ os.system("sudo apt-get install -y shellinabox")
 
 #set up some things for user accounts
 os.system("sudo groupadd pirates")
-os.system("sudo useradd -G pirates -p " + encrypt("masterpiratepassword") + " masterpirate") #might need this, don't need it right now. I just added it just for fun.
+os.system("sudo useradd -G ctf2015teams -p " + encrypt("masterpiratepassword") + " masterpirate") #might need this, don't need it right now. I just added it just for fun.
 
 #copy problems from shell_problems folder to the /home directory
-os.system("sudo cp -r " + os.path.join(os.path.dirname(__file__),"piratectf/ubuntu_server/shell_problems") + " /home/problems/")
+os.system("sudo cp -r " + os.path.join(os.path.dirname(__file__),"/home/piratectfrepository/piratectf/ubuntu_server/shell_problems") + " /home/problems/")
 
 #create problemsu group, create user in problemsu for each binary exploit problem
 os.system("sudo addgroup problemsu")
