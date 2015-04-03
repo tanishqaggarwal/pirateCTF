@@ -2,6 +2,8 @@
 #This software platform is distributed under the MIT license. A copy of the license can be found in license.md.
 
 #MASTER TODO:
+#IN BUYER, implement it so that the users cannot buy a problem if its parent hasn't been solved yet.
+
 #Admin console backend logic.
 #Frontend and JS Files.
 # -- First up, problemsort.js since that seems to be fun.
@@ -15,7 +17,7 @@ from adminconsole import *
 from development import *
 from securefunctions import *
 
-application = webapp2.WSGIApplication([] + [
+application = webapp2.WSGIApplication([
     #Serves pages to main users - pageserver.py
     ('/', Index),
     ('/index', Index),

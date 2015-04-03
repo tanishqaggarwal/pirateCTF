@@ -20,6 +20,9 @@ NUMBER_USERS = 5 * NUMBER_TEAMS
 NUMBER_UPDATES = 10
 NUMBER_MICROUPDATES = 500
 
+jinja_environment = jinja2.Environment(autoescape=True,
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'html')))
+
 def graderfunction(flag,x):
     if flag == "flag_for_problem_" + str(x):
         return True
@@ -112,18 +115,8 @@ class ProduceTestData(webapp2.RequestHandler):
 
 class CookieProducer(webapp2.RequestHandler):
     def get(self):
-        textstring = """<html>
-    <head>
-        <title>Produce Cookie</title>
-    </head>
-    <body>
-        <form action = "/dev/cookieproducer" method = "POST">
-            <input type = "text" name = "userobject" placeholder = "Cookie JSON String" />
-            <input type = "submit" name = "submit" value = "submit" />
-        </form>
-    </body>
-</html>"""
         if "Development" in os.environ["SERVER_SOFTWARE"]:
+            textstring = jinja_environment.get_template("cookieproducer.html").render()
             self.response.out.write(textstring)
         else:
             self.response.out.write("not on development server")
