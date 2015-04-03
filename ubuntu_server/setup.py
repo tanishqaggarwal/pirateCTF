@@ -28,12 +28,12 @@ os.system("sudo pip install webapp2")
 os.system("sudo pip install pycrypto")
 os.system("sudo pip install jinja2")
 
-#start servers
+#start webapp2 server
 os.system("python " + os.path.join(os.path.dirname(__file__),"piratectf/ubuntu_server/shellaccount_creationserver/main.py")) #starts webapp2 shell account creation server
 
 #Configure message of the day
 os.system("sudo cp " + os.path.join(os.path.dirname(__file__),"piratectf/miscellaneous_files/motd") + " /etc/motd")
-os.system("sudo update-motd")
+os.system("sudo chmod -x /etc/update-motd.d/*")
 
 #install shellinabox and configure it
 os.system("sudo apt-get install -y shellinabox")
@@ -50,6 +50,7 @@ os.system("sudo cp -r " + os.path.join(os.path.dirname(__file__),"piratectf/ubun
 os.system("sudo addgroup problemsu")
 os.system("sudo useradd -G problemsu -p " + encrypt("problemsensei") + " problemsensei") #The OP problem sensei. Will probably never need this account but its fun to add stuff in like this.
 
+#set up permissions for each problem folder
 for root,dirs,files in os.walk("/home/problems"):
 	name = root
 	path = "/home/problems" + name
