@@ -8,7 +8,7 @@ FLAG = "you_better_not_encrypt_your_stuff_like_this"
 PREVIOUS_FLAGS = ["something"]
 
 jinja_environment = jinja2.Environment(autoescape=True,
-    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'static/html')))
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'html')))
 
 class FishyCookiesLogin(webapp2.RequestHandler):
 	def get(self):
@@ -56,9 +56,10 @@ class FishyCookiesEncryptionDecryption(webapp2.RequestHandler):
 			self.response.out.write(securefishfunction(mode,text))
 
 def securefishfunction(mode,text):
+	supersecurekey = "condrichthyes_game_too_strong"
 	if mode == "encrypt":
-		pass
+		return base64.b64encode(supersecurekey + text)
 	elif mode == "decrypt":
-		pass
+		return base64.b64decode(text)
 	else:
 		return "invalid mode"

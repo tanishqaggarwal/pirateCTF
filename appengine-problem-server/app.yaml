@@ -9,9 +9,6 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: .*
-  script: main.application
-
 #The below has been done in order to prevent access to static/html
 
 - url: /static/css
@@ -37,6 +34,9 @@ handlers:
 - url: /static/includes
   static_dir: static/includes
   secure: always
+
+- url: .*
+  script: main.application
 
 libraries:
 - name: webapp2

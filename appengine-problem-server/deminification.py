@@ -6,7 +6,7 @@ FLAG = "hope_you_had_fun_deminifying"
 PREVIOUS_FLAGS = ["something"]
 
 jinja_environment = jinja2.Environment(autoescape=True,
-    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'static/html')))
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'html')))
 
 class DeminificationExercise(webapp2.RequestHandler):
 	def get(self):

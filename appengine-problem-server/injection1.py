@@ -4,6 +4,9 @@ import webapp2
 FLAG = "ez_pz_injection"
 PREVIOUS_FLAGS = ["something"]
 
+jinja_environment = jinja2.Environment(autoescape=True,
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'html')))
+
 class InjectionOne(webapp2.RequestHandler):
 	def get(self):
 		self.response.out.write(jinja_environment.get_template("problems/injection1/login.html").render({}))
