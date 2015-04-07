@@ -50,4 +50,7 @@ application = webapp2.WSGIApplication([
     #For temporary, development use only - development.py
     ('/dev/producetestdata',ProduceTestData),
     ('/dev/cookieproducer',CookieProducer),
-], debug=True)
+], debug=True, config = {
+    "problem_hierarchy" : True,
+    "buyable" : True,
+})

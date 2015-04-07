@@ -118,6 +118,9 @@ class Problems(webapp2.RequestHandler):
                     "solved"          : False,
                     "buyed"           : False,
                 }
+                if self.app.config["problem_hierarchy"]:
+                    problemdata["problem_parents"] = problem.problem_parents
+                    problemdata["problem_children"] = problem.problem_children
                 for problemsolved in solved_problems: #A for loop inside a for loop is inefficient, but it gets the job done and doesn't take too much time since the number of problems is small
                     if problemsolved.title == problemdata.title:
                         problemdata.append("user",problemsolved.user)

@@ -160,6 +160,9 @@ class AdminConsoleChangeProblemChildren(webapp2.RequestHandler):
 	def post(self):
 		if users.is_current_user_admin():
 			mode = self.request.get("mode")
+			if not self.app.config("problem_hierarchy"):
+				self.response.out.write("hierarchy not enabled")
+				return
             if mode == "changeproblemchildren":
 				self.response.out.write("problem children changed")
 			else:
@@ -171,6 +174,9 @@ class AdminConsoleChangeProblemParents(webapp2.RequestHandler):
 	def post(self):
 		if users.is_current_user_admin():
 			mode = self.request.get("mode")
+			if not self.app.config("problem_hierarchy"):
+				self.response.out.write("hierarchy not enabled")
+				return
             if mode == "changeproblemparents":
 				self.response.out.write("problem parents changed")
 			else:

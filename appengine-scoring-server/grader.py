@@ -63,7 +63,7 @@ class Grader(webapp2.RequestHandler):
 				if not aproblem.problem_parents:
 					solved_parent = True
 
-				if not solved_parent:
+				if not solved_parent and self.app.config["problem_hierarchy"]:
 					self.response.out.write("at least one parent problem not solved/bought (but flag correct)")
 					return
 					
@@ -107,6 +107,10 @@ class Grader(webapp2.RequestHandler):
 
 class Buyer(webapp2.RequestHandler):
 	def post(self):
+		if not self.app.config["buyable"]:
+			self.response.out.write("buying problems is not enabled")
+			return
+
 		problem = self.request.get("problemidentifier")
 		ipaddr  = self.request.remote_addr
 
