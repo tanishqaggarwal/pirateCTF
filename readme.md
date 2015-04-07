@@ -23,11 +23,7 @@ Usage
 
 The appengine scoring server is well-documented with comments and is fairly self-explanatory. Set up an App Engine application, deploy it with the given code and it will run fine as-is. Your own custom stylings are easy to apply, and there is an admin console to facilitate most tasks.
 
-If you're confused about the problem_parents and problem_children properties of the Problems model, we strongly encourage you to go to http://piratectf.com and check out our problem layout, and consider using it for your own CTF. If not, you have two options: either refactoring our code completely, or initializing the problem_parent to a list containing one element: the name of the previous problem and the problem_children to a list containing one element which is the name of the problem following after. Additionally, in grader.py, remove the code that checks if the previous problem is solved (should be documented by comments pretty clearly).
-
-We also implement a mechanism where users can buy problem flags for points. To let this mechanism render no effect on scoring, you can set the problem buy point value to the same thing as the actual problem point value, so that any users that buy flags receive 0 points.
-
-Finally, if you do not want your users to absolutely have to submit an explanation for every problem, you don't have to. Just remove it from the problems.html source code.
+If you're confused about the problem_parents and problem_children properties of the Problems model, we strongly encourage you to go to http://piratectf.com and check out our problem layout, and consider using it for your own CTF. If not, you can simply go to main.py and edit the corresponding config value for the WSGI application. You can do the same thing for setting whether or not problems can be bought for points, and whether or not you want your users to have to provide an explanation for the problems they solve. It is recommended that if you implement the buyable setting, you should also implement the explanation setting so that users cannot create multiple teams for buying flags and them putting them in to another team's account without paying for the flag.
 
 ### Shell Server
 

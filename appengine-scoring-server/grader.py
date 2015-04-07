@@ -37,7 +37,7 @@ class Grader(webapp2.RequestHandler):
 			self.response.out.write("not a valid problem identifier")
 			return
 
-		if not explanation:
+		if not explanation and self.app.config["problem_explanation"]:
 			self.response.out.write("explanation required for flag submission")
 			return
 		else:
