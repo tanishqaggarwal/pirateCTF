@@ -3,11 +3,6 @@
 
 from google.appengine.ext import ndb
 
-from google.appengine.ext.db import EmailProperty
-from google.appengine.ext.db import PostalAddressProperty
-from google.appengine.ext.db import CategoryProperty
-from google.appengine.ext.db import PhoneNumberProperty
-
 class ProblemAttempts(ndb.Model):
 	attempt    = ndb.StringProperty(required=True)
 	explanation = ndb.TextProperty() #used to verify legit problem solves, since teams could just create duplicate accounts to harvest flags if no explanation was necessary. Can be disabled in main.py.
