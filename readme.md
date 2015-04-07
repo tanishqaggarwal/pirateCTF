@@ -1,13 +1,6 @@
 PirateCTF Platform
 ===================
 
-Version History
---------------------
-**Current Version** - 1.0
-
-###Change Log
-1.0 -- Initial Version (commit [d2d7808](https://github.com/tanishqaggarwal/pirateCTF/commit/d2d7808a78d2d4fd084c85d259f89ecce9591b92))
-
 Introduction
 -------------------
 
@@ -50,3 +43,10 @@ License
 -------------------
 
 All of the above content is now licensed under the MIT license. A copy of the license can be found in license.md.
+
+Version History
+--------------------
+**Current Version** - 1.0
+
+###Change Log
+1.0 -- Initial Version (commit [d2d7808](https://github.com/tanishqaggarwal/pirateCTF/commit/d2d7808a78d2d4fd084c85d259f89ecce9591b92))
