@@ -37,7 +37,7 @@ class Grader(webapp2.RequestHandler):
 			self.response.out.write("not a valid problem identifier")
 			return
 
-		if not explanation and self.app.config["problem_explanation"]:
+		if not explanation and self.app.config.get("problem_explanation"):
 			self.response.out.write("explanation required for flag submission")
 			return
 		else:
@@ -63,7 +63,7 @@ class Grader(webapp2.RequestHandler):
 				if not aproblem.problem_parents:
 					solved_parent = True
 
-				if not solved_parent and self.app.config["problem_hierarchy"]:
+				if not solved_parent and self.app.config.get("problem_hierarchy"):
 					self.response.out.write("at least one parent problem not solved/bought (but flag correct)")
 					return
 					
