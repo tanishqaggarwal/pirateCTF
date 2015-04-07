@@ -1,6 +1,13 @@
 PirateCTF Platform
 ===================
 
+Version History
+--------------------
+**Current Version** - 1.0
+
+###Change Log
+1.0 -- Initial Version (commit [d2d7808](https://github.com/tanishqaggarwal/pirateCTF/commit/d2d7808a78d2d4fd084c85d259f89ecce9591b92))
+
 Introduction
 -------------------
 
