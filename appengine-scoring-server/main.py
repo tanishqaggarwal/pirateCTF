@@ -18,7 +18,7 @@ config = {
     "buyable" : True,
 } #set of parameters that enables various pirateCTF-specific features, such as the ability to have a problem hierarchy, the requirement for users to submit an explanation for every problem attempt, and the ability for users to buy flags for points.
 
-application = webapp2.WSGIApplication([
+application = webapp2.WSGIApplication(routes=[
     #Serves pages to main users - pageserver.py
     ('/', Index),
     ('/index', Index),
@@ -40,11 +40,11 @@ application = webapp2.WSGIApplication([
     ('/grader',Grader),
     ('/buyer',Buyer),
 ] + [
-    #The administration console - adminconsole.py
-    ('/admin/index',AdminConsole),
-    ('/admin/actions/addproblem',AdminConsoleAddProblem),
-    ('/admin/adminrequest/teammembers',AdminConsoleInformationRequestTeamMembers),
-    ('/admin/pages/addproblem',AdminConsoleAddProblem),
+    #The administration console - adminconsole.py. IS BEING ACTIVELY DEVELOPED, WILL NOT BE INCLUDED AS OF NOW.
+    #('/admin/index',AdminConsole),
+    #('/admin/actions/addproblem',AdminConsoleAddProblem),
+    #('/admin/adminrequest/teammembers',AdminConsoleInformationRequestTeamMembers),
+    #('/admin/pages/addproblem',AdminConsoleAddProblem),
 ] + [
     #Functions for encryption and hashing - securefunctions.py
     ('/security/cookiechecker',CookieChecker),

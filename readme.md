@@ -21,7 +21,7 @@ Usage
 
 ### AppEngine Scoring Server
 
-The appengine scoring server is well-documented with comments and is fairly self-explanatory. Set up an App Engine application, deploy it with the given code and it will run fine as-is. Your own custom stylings are easy to apply, and there is an admin console to facilitate most tasks.
+The appengine scoring server is well-documented with comments and is fairly self-explanatory. Set up an App Engine application, deploy it with the given code and it will run fine as-is. Your own custom stylings are easy to apply. There is an admin console being developed actively, but it is not available yet. For now, most administrative tasks imaginable can be handled using the GAE datastore viewer.
 
 If you're confused about the problem_parents and problem_children properties of the Problems model, we strongly encourage you to go to http://piratectf.com and check out our problem layout, and consider using it for your own CTF. If not, you can simply go to main.py and edit the corresponding config value for the WSGI application. You can do the same thing for setting whether or not problems can be bought for points, and whether or not you want your users to have to provide an explanation for the problems they solve. It is recommended that if you implement the buyable setting, you should also implement the explanation setting so that users cannot create multiple teams for buying flags and them putting them in to another team's account without paying for the flag.
 
@@ -49,4 +49,5 @@ Version History
 **Current Version** - 1.0
 
 ###Change Log
-1.0 -- Initial Version (commit [d2d7808](https://github.com/tanishqaggarwal/pirateCTF/commit/d2d7808a78d2d4fd084c85d259f89ecce9591b92))
+
+1.0 -- Initial Version (commit [d2d7808a](https://github.com/tanishqaggarwal/pirateCTF/commit/d2d7808a78d2d4fd084c85d259f89ecce9591b92))
