@@ -10,7 +10,7 @@ from Crypto import Random
 import json
 
 ENCRYPTION_SECRET = "P!r@teCtF__sh@dy"
-PASS_HASH_SECRET = "n0t_sh@d1er_th@n_sh@n!sh"
+PASS_HASH_SECRET = "w0w_s0_s3cr3t"
 
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS) 

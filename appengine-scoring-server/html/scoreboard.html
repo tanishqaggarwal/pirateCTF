@@ -49,7 +49,9 @@
     </div>
 
     <div id = "solvedtable"></div>
-    
+        
+    {{ data|safe }}
+
     <hr />
     </div>
 </div>
@@ -63,7 +65,7 @@
 <script src="/static/js/custom/production/scoreboard.js"></script>
 
 <script type = "text/javascript">
-    var scoreboarddata = JSON.parse({{ teamdata|safe }});
+    var scoreboarddata = JSON.parse({{ data|safe }});
     var thescoreboard = new ScoreBoard(scoreboarddata,"scoreboard","chart","solvedtable");
     thescoreboard.producetable();
     thescoreboard.producechart();

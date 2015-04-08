@@ -50,13 +50,13 @@ class ProduceTestData(webapp2.RequestHandler):
             theproblem.title = "Problem " + str(x)
             theproblem.text = "Some text of problem " + str(x)
             theproblem.hint = "This is a shady hint for problem " + str(x)
-            theproblem.points = 100
+            theproblem.points = 20 * (((x - 1) % NUMBER_DIFFICULTIES) + 1)
             theproblem.buy_for_points = theproblem.points - 10
             theproblem.graderfunction = pickle.dumps(graderfunction(theproblem.flag,x))
             theproblem.flag = "flag_for_problem_" + str(x)
             theproblem.problem_type = problemtypes[(x - 1) % 8]
-            theproblem.problemparents = [str("Problem " + str(x - 1))] if x > 1 else []
-            theproblem.problemchildren = [str("Problem " + str(x + 1))] if x < NUMBER_PROBLEMS else []
+            theproblem.problem_parents = [str("Problem " + str(x - 1))] if x > 1 else []
+            theproblem.problem_children = [str("Problem " + str(x + 1))] if x < NUMBER_PROBLEMS else []
             theproblem.put()
         logging.info("problems generated")
     def produce_sample_users(self):

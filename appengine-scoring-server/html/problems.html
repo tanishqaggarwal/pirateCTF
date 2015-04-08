@@ -1,1 +1,102 @@
-{{ allproblems | safe }}
+<!DOCTYPE html>
+<html class="full" lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Problems | PirateCTF 2015</title>
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body style = "margin-top: 50px;">
+
+    <div id = "navigation"></div>
+
+    <div class = "container">
+        <div class = "row">
+        <h1 class = "header">Problems</h1><hr />
+    {% for problem in allproblems %}
+      <div class="problem solved panel panel-default">
+        <div class="problem-header panel-heading" data-toggle="collapse" data-target="#{{ problem['hash'] | safe }}">
+            <h4 class="panel-title">
+                {% if problem['num_solved'] is sameas 0 %} 
+                    <span class = "label label-danger">Unsolved</span>
+                {% else %}
+                    <span class = "label label-success">Solved by {{ problem['num_solved'] }}</span> 
+                {% endif %}
+                {{ problem['title'] }} - {{ problem['points'] }} (Buy for {{ problem['buy_for_points'] }} points)
+                <div class="pull-right">{{ problem['category'] }} - 
+                {% if problem['solved'] %} 
+                    Solved 
+                {%elif problem['buyed'] %} 
+                    Buyed 
+                {% else %} 
+                    Unsolved 
+                {% endif %}</div>
+            </h4>
+        </div>
+
+        <div class="panel-collapse collapse" id="{{ problem['hash'] | safe }}" style="">
+            <div class="problem-body panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#{{ problem['hash'] | safe }}solve" data-toggle="tab">Solve</a>
+                    </li>
+                    <li><a href="#{{ problem['hash'] | safe }}hint" data-toggle="tab" class="hint-tab-button" data-pid="{{ problem['hash'] | safe }}">Hint</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane disabled active" id="{{ problem['hash'] | safe }}solve">
+                        <div class="panel-body">
+        <!-- TODO -- ADD problem effects (popups), validate data, create modal for problem explanation -->
+                            
+    <p class="problem-description">
+        {{ problem['text'] }}
+        <br /><br /> Problem Parents: {{ problem['problem_parents'] | safe }} <br />
+        Problem Children: {{ problem['problem_children'] | safe }}
+    </p>
+    <div class="row">
+        <form class="problem-submit" id = "{{ problem['hash'] | safe }}submitform">
+            <div class="input-group input-group-sm">
+        <span class="input-group-btn">
+          <button class="btn btn-success" type="submit">Submit</button>
+        </span>
+                <input type="text" data-pid="{{ problem['hash'] | safe }}" class="form-control" id = "{{ problem['hash'] | safe }}flagsubmit">
+            </div>
+        </form>
+    </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="{{ problem['hash'] | safe }}hint">
+                        <div class="panel-body">
+                            {{ problem['hint'] }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}    
+    </div>
+</div>
+
+    <div id = "footer"></div>
+</body>
+
+<script src="/static/js/external/jquery-1.11.2.min.js"></script>
+<script src="/static/js/external/bootstrap.min.js"></script>
+<script src="/static/js/custom/production/navload.js"></script>
+<script src="/static/js/custom/production/problemeffects.js"></script> 
+</html>

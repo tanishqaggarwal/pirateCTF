@@ -18,8 +18,9 @@ import urllib
 jinja_environment = jinja2.Environment(autoescape=True,
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'html')))
 
-DOMAIN_NAME = "piratectf.com"
+DOMAIN_NAME = "45.55.182.189"
 SHELL_CREATION_PORT = str(6969)
+SHELL_SERVER_PORT = str(22)
 
 def timeformat(datetime):
     datetimestring = datetime.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
@@ -91,7 +92,7 @@ class DisplayProblems(webapp2.RequestHandler):
     def populateServerContent(self,userdata):
         data = memcache.get('problemsforteam' + userdata['teamname'])
         if not data:
-            problemquery = ndb.gql("SELECT * FROM Problems").fetch(limit=1000)
+            problemquery = ndb.gql("SELECT * FROM Problems ORDER BY points ASC, title ASC").fetch(limit=1000)
             teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn",teamn = userdata['teamname']).get()
             solved_problems = []
             for solved_problem in teamquery.successful_attempts:
@@ -105,6 +106,7 @@ class DisplayProblems(webapp2.RequestHandler):
             problems = []
             for problem in problemquery:
                 problemdata = {
+                    "hash"            : hash_pass(problem.title),
                     "title"           : problem.title,
                     "category"        : problem.problem_type,
                     "num_solved"      : problem.number_solved,
@@ -168,9 +170,9 @@ class Shell(webapp2.RequestHandler):
             data['shell_username'] = teamquery.shell_username
             data['shell_password'] = teamquery.shell_password
             memcache.add('shellfor' + userdata['teamname'],data)
-            return data
-        else:
-            return data
+        data["IP"] = DOMAIN_NAME
+        data["PORT"] = SHELL_SERVER_PORT
+        return data
 
 class Chat(webapp2.RequestHandler):
     def get(self):
@@ -198,7 +200,7 @@ class Scoreboard(webapp2.RequestHandler):
     def populateServerContent(self):
         data = memcache.get('scoreboard')
         if not data:
-            teamquery  = ndb.gql("SELECT * FROM Teams").fetch(limit=None)
+            teamquery  = ndb.gql("SELECT * FROM Teams ORDER BY points DESC").fetch(limit=None)
             data = {
                 "data" : []
             }
@@ -223,10 +225,8 @@ class Scoreboard(webapp2.RequestHandler):
                     memcache.add("teaminfoforteam" + team.teamname,teamdat)
                     data["data"].append(teamdat)
             memcache.add('scoreboard',data)
-            return data
-        else:
-            return data
-
+        return data
+        
 class ShowProblemsSolved(webapp2.RequestHandler):
     def post(self):
         senddata = memcache.get("showproblemsforteam" + self.request.get("teamname"))
