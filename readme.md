@@ -27,7 +27,7 @@ If you're confused about the problem_parents and problem_children properties of 
 
 ### Shell Server
 
-To use the shell server, simply run setup.py in the ubuntu_server folder. 
+To use the shell server, simply copy the ubuntu_server folder on to your server and run setup.py in the ubuntu_server folder. 
 
 #### Currently-known supported systems by setup.py
 The following is a list of systems that are currently known to work with setup.py in the ubuntu_server folder. If you find that the script works in other Ubuntu distributions, please contact us to update this readme. Note that the below list applies only to clean installations.

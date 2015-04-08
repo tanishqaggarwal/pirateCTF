@@ -31,7 +31,7 @@ class Index(webapp2.RequestHandler):
         template_values = {}
         self.response.out.write(template.render(template_values))
 
-class Updates(webapp2.RequestHandler):
+class DisplayUpdates(webapp2.RequestHandler):
     def get(self):
         template = jinja_environment.get_template("updates.html")
         template_values = self.populateServerContent()
@@ -40,8 +40,8 @@ class Updates(webapp2.RequestHandler):
         data = memcache.get('updates')
         microdata = memcache.get('microupdates')
         if not data:
+            updateslist = []
             updates_list = ndb.gql("SELECT * FROM Updates ORDER BY time DESC").fetch(limit=None)
-            data = []
             
             for update in updates_list:
                 updatedata = {
@@ -49,14 +49,13 @@ class Updates(webapp2.RequestHandler):
                     "update" : update.update,
                     "time"   : update.time.strftime("%b %d %Y %H:%M"),
                 }
-                data.updateslist.append(updatedata)
+                updateslist.append(updatedata)
 
-            memcache.add('updates',data)
+            memcache.add('updates',updateslist)
 
         if not microdata:
-
+            microupdateslist = []
             microupdates_list = ndb.gql("SELECT * FROM MicroUpdates ORDER BY time DESC").fetch(limit=None)
-            microdata = []
 
             for microupdate in microupdates_list:
                 microupdatedata = {
@@ -64,13 +63,13 @@ class Updates(webapp2.RequestHandler):
                     "update" : microupdate.update,
                     "time"   : microupdate.time.strftime("%b %d %Y %H:%M"),
                 }
-                microdata.microupdateslist.append(microupdatedata)
+                microupdateslist.append(microupdatedata)
 
-            memcache.add('microupdates',microdata)
+            memcache.add('microupdates',microupdateslist)
         
         return {"microupdates" : memcache.get("microupdates"), "updates" : memcache.get("updates")}
 
-class Problems(webapp2.RequestHandler):
+class DisplayProblems(webapp2.RequestHandler):
     def get(self):
         if users.get_current_user():
             try:
@@ -93,7 +92,7 @@ class Problems(webapp2.RequestHandler):
         data = memcache.get('problemsforteam' + userdata['teamname'])
         if not data:
             problemquery = ndb.gql("SELECT * FROM Problems").fetch(limit=1000)
-            teamquery = ndb.gql("SELECT successful_attempts FROM Teams WHERE teamname = :teamn",teamn = userdata['teamname']).get()
+            teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn",teamn = userdata['teamname']).get()
             solved_problems = []
             for solved_problem in teamquery.successful_attempts:
                 solved_problems.append({
@@ -107,11 +106,11 @@ class Problems(webapp2.RequestHandler):
             for problem in problemquery:
                 problemdata = {
                     "title"           : problem.title,
-                    "category"        : problem.category,
-                    "num_solved"      : problem.num_solved,
+                    "category"        : problem.problem_type,
+                    "num_solved"      : problem.number_solved,
                     "points"          : problem.points,
                     "buy_for_points"  : problem.buy_for_points,
-                    "text"            : problem.problem,
+                    "text"            : problem.text,
                     "hint"            : problem.hint,
                     "problem_parents" : problem.problem_parents,
                     "problem_children": problem.problem_children,

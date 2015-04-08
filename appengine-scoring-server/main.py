@@ -34,12 +34,12 @@ application = webapp2.WSGIApplication([
     ('/register', Register),
     ('/scoreboard',Scoreboard),
     ('/showteamproblems',ShowProblemsSolved),
-    ('/problems',Problems),
+    ('/problems',DisplayProblems),
     ('/shell',Shell),
     ('/chat',Chat),
     ('/account',Account),
     ('/team',Team),
-    ('/updates',Updates),
+    ('/updates',DisplayUpdates),
 ] + [
     #Grader - grader.py
     ('/grader',Grader),
