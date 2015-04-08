@@ -27,10 +27,10 @@ If you're confused about the problem_parents and problem_children properties of 
 
 ### Shell Server
 
-To use the shell server, simply copy the ubuntu_server folder on to your server and run setup.py in the ubuntu_server folder. 
+To use the shell server, simply copy the `ubuntu_server` folder on to your server and run `setup.py` in the ubuntu_server folder. It is recommended that you create a non-root user and log into this user when you run this script. Run the script with superuser privileges.
 
-#### Currently-known supported systems by setup.py
-The following is a list of systems that are currently known to work with setup.py in the ubuntu_server folder. If you find that the script works in other Ubuntu distributions, please contact us to update this readme. Note that the below list applies only to clean installations.
+#### Currently-known supported systems by `setup.py`
+The following is a list of systems that are currently known to work with `setup.py` in the ubuntu_server folder. The script will probably only work with Debian-based systems as it relies on heavy use of the `apt-get` command. If you find that the script works in other Ubuntu distributions, please contact us to update this readme. Note that the below list applies only to clean installations.
 
 - Ubuntu Server 14.04
 

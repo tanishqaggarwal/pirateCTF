@@ -1,14 +1,9 @@
 #PirateCTF 2015 AppEngine platform.
 #This software platform is distributed under the MIT license. A copy of the license can be found in license.md.
 
-#MASTER TODO:
-#IN BUYER, implement it so that the users cannot buy a problem if its parent hasn't been solved yet.
-
 #Admin console backend logic.
 #Frontend and JS Files.
 # -- First up, problemsort.js since that seems to be fun.
-
-#Fix "Model constructor takes no positional arguments" on problems page and updates page.
 
 import webapp2
 from grader import *
@@ -47,6 +42,7 @@ application = webapp2.WSGIApplication([
 ] + [
     #The administration console - adminconsole.py
     ('/admin/index',AdminConsole),
+    ('/admin/actions/addproblem',AdminConsoleAddProblem),
     ('/admin/adminrequest/teammembers',AdminConsoleInformationRequestTeamMembers),
     ('/admin/pages/addproblem',AdminConsoleAddProblem),
 ] + [
