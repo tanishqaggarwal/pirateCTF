@@ -27,7 +27,9 @@
 
 <div class = "container">
     <div class = "row">
-    <h1 class = "header">Shell</h1>
+    <div class = "page-header">
+        <h1 class = "header">Shell</h1>
+    </div>
     <p>Use the following information to log into the shell server. The shell server can also be accessed through your favorite SSH client at <code>{{ IP|safe }}:{{ PORT|safe }}</code>.</p>
     <p class = "text-center">Username: <code>{{ shell_username | safe }}</code></p>
 	<p class = "text-center">Password: <code>{{ shell_password | safe }}</code></p>

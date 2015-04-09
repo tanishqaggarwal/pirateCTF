@@ -46,6 +46,7 @@ class DisplayUpdates(webapp2.RequestHandler):
             
             for update in updates_list:
                 updatedata = {
+                    "hash"   : hash_pass(update.title),
                     "title"  : update.title,
                     "update" : update.update,
                     "time"   : update.time.strftime("%b %d %Y %H:%M"),
@@ -92,7 +93,7 @@ class DisplayProblems(webapp2.RequestHandler):
     def populateServerContent(self,userdata):
         data = memcache.get('problemsforteam' + userdata['teamname'])
         if not data:
-            problemquery = ndb.gql("SELECT * FROM Problems ORDER BY points ASC, title ASC").fetch(limit=1000)
+            problemquery = ndb.gql("SELECT * FROM Problems ORDER BY points ASC, title ASC").fetch(limit=None)
             teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn",teamn = userdata['teamname']).get()
             solved_problems = []
             for solved_problem in teamquery.successful_attempts:
@@ -105,33 +106,49 @@ class DisplayProblems(webapp2.RequestHandler):
 
             problems = []
             for problem in problemquery:
-                problemdata = {
-                    "hash"            : hash_pass(problem.title),
-                    "title"           : problem.title,
-                    "category"        : problem.problem_type,
-                    "num_solved"      : problem.number_solved,
-                    "points"          : problem.points,
-                    "buy_for_points"  : problem.buy_for_points,
-                    "text"            : problem.text,
-                    "hint"            : problem.hint,
-                    "problem_parents" : problem.problem_parents,
-                    "problem_children": problem.problem_children,
-                    "solved"          : False,
-                    "buyed"           : False,
-                }
-                if self.app.config.get("problem_hierarchy"):
-                    problemdata["problem_parents"] = problem.problem_parents
-                    problemdata["problem_children"] = problem.problem_children
-                for problemsolved in solved_problems: #A for loop inside a for loop is inefficient, but it gets the job done and doesn't take too much time since the number of problems is small
-                    if problemsolved.title == problemdata.title:
-                        problemdata.append("user",problemsolved.user)
-                        problemdata.buyed = problemsolved.buyed
-                        problemdata.solved = True
-                        problemdata.flag = problemsolved.flag
+                problemdata = memcache.get("problem" + problem.title + "forteam" + userdata["teamname"])
+                if not problemdata:
+                    problemdata = {
+                        "hash"            : hash_pass(problem.title),
+                        "title"           : problem.title,
+                        "category"        : problem.problem_type,
+                        "num_solved"      : problem.number_solved,
+                        "points"          : problem.points,
+                        "buy_for_points"  : problem.buy_for_points,
+                        "text"            : problem.text,
+                        "hint"            : problem.hint,
+                        "problem_parents" : problem.problem_parents,
+                        "problem_children": problem.problem_children,
+                        "solved"          : False,
+                        "buyed"           : False,
+                    }
+                    if self.app.config.get("problem_hierarchy"):
+                        problemdata["problem_parents"] = problem.problem_parents
+                        problemdata["problem_children"] = problem.problem_children
+                    for problemsolved in solved_problems: #A for loop inside a for loop is inefficient, but it gets the job done and doesn't take too much time since the number of problems is small
+                        if problemsolved.title == problemdata.title:
+                            problemdata.append("user",problemsolved.user)
+                            problemdata.buyed = problemsolved.buyed
+                            problemdata.solved = True
+                            problemdata.flag = problemsolved.flag
+                    
+                    newparents = []
+                    for parents in problemdata["problem_parents"]:
+                        newparents.append(hash_pass(parents))
+
+                    newchildren = []
+                    for children in problemdata["problem_children"]:
+                        newchildren.append(hash_pass(children))
+                        
+                    problemdata["problem_parents"] = newparents
+                    problemdata["problem_children"] = newchildren
+                    memcache.add("problem" + problem.title + "forteam" + userdata["teamname"],problemdata)
+                
                 problems.append(problemdata)
 
             data = {
                 "allproblems" : problems,
+                "points" : teamquery.points,
             }
             memcache.add('problemsforteam' + userdata['teamname'],data)
             return data
