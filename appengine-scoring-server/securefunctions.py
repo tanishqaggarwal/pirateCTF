@@ -3,6 +3,7 @@
 
 import webapp2
 
+import logging
 import hmac
 import base64
 from Crypto.Cipher import AES
@@ -47,13 +48,16 @@ def return_pass_hash_secret():
 	return PASS_HASH_SECRET
 
 class CookieChecker(webapp2.RequestHandler):
-    def post(self):
+    def get(self):
+        returndict = {
+            "valid" : False,
+            "defaultclass" : False,
+        }
         try:
-            userobject = json.loads(decrypt(self.request.get("cookie")))
-        except:
-            self.response.out.write("False")
-            return
-        self.response.out.write("True")
-
-# somestring = "6RcRonAoHI14ARE7s1dUd1H8RTjPsgrXZoMz4XCCE31ZUnOmX/6018loa77dPbxlO4vaebxSDMnYqGPYH4iFZlq3HDr3zh2mKgFp9fueKba4f3ncoYV+SbgDQpv6qT77uIyJ/8kbhQlzJYE8N5FRaQ\075\075"
-# print json.loads(decrypt(somestring))
+            userobject = json.loads(decrypt(self.request.cookies.get("userobject")))
+            returndict['valid'] = True
+            if userobject["classname"] != "defaultclass":
+                returndict["defaultclass"] = True
+            self.response.out.write(json.dumps(returndict))
+        except Exception as e:
+            self.response.out.write(json.dumps(returndict))

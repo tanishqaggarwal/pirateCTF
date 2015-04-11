@@ -6,7 +6,7 @@ from google.appengine.ext import ndb
 class ProblemAttempts(ndb.Model):
 	attempt    = ndb.StringProperty(required=True)
 	explanation = ndb.TextProperty() #used to verify legit problem solves, since teams could just create duplicate accounts to harvest flags if no explanation was necessary. Can be disabled in main.py.
-	time       = ndb.DateTimeProperty(required=True,auto_now_add=True)
+	time       = ndb.DateTimeProperty(auto_now_add=True)
 	problem    = ndb.StringProperty() #reference problem titles
 	ip         = ndb.StringProperty(required=True)
 	user       = ndb.StringProperty(required=True) #username of user

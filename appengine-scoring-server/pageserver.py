@@ -17,6 +17,9 @@ import urllib
 
 jinja_environment = jinja2.Environment(autoescape=True,
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'html')))
+def tojson(value):
+    return json.dumps(value)
+jinja_environment.filters["tojson"] = tojson
 
 DOMAIN_NAME = "45.55.182.189"
 SHELL_CREATION_PORT = str(6969)
@@ -98,10 +101,10 @@ class DisplayProblems(webapp2.RequestHandler):
             solved_problems = []
             for solved_problem in teamquery.successful_attempts:
                 solved_problems.append({
-                    "title"   : solved_problem["problem"],
-                    "buyed"   : solved_problem["buyed"],
-                    "user"    : solved_problem["user"],
-                    "flag"    : solved_problem["attempt"],
+                    "title"   : solved_problem.problem,
+                    "buyed"   : solved_problem.buyed,
+                    "user"    : solved_problem.user,
+                    "flag"    : solved_problem.attempt,
                     })
 
             problems = []
@@ -114,40 +117,41 @@ class DisplayProblems(webapp2.RequestHandler):
                         "category"        : problem.problem_type,
                         "num_solved"      : problem.number_solved,
                         "points"          : problem.points,
-                        "buy_for_points"  : problem.buy_for_points,
-                        "text"            : problem.text,
-                        "hint"            : problem.hint,
-                        "problem_parents" : problem.problem_parents,
-                        "problem_children": problem.problem_children,
                         "solved"          : False,
                         "buyed"           : False,
+                        "unlocked"        : False,
                     }
                     if self.app.config.get("problem_hierarchy"):
                         problemdata["problem_parents"] = problem.problem_parents
                         problemdata["problem_children"] = problem.problem_children
-                    for problemsolved in solved_problems: #A for loop inside a for loop is inefficient, but it gets the job done and doesn't take too much time since the number of problems is small
-                        if problemsolved.title == problemdata.title:
-                            problemdata.append("user",problemsolved.user)
-                            problemdata.buyed = problemsolved.buyed
-                            problemdata.solved = True
-                            problemdata.flag = problemsolved.flag
+                    else:
+                        pass
                     
-                    newparents = []
-                    for parents in problemdata["problem_parents"]:
-                        newparents.append(hash_pass(parents))
+                    if problemdata['problem_parents']:
+                        for parent in problemdata["problem_parents"]:
+                            for solvedproblem in solved_problems:
+                                if parent == solvedproblem["title"]:
+                                    problemdata["unlocked"] = True
+                                    break
+                    else:
+                        problemdata["unlocked"] = True
+                    
+                    if problemdata["unlocked"]:
+                        problemdata["buy_for_points"] = problem.buy_for_points
+                        problemdata["text"] = problem.text
+                        problemdata["hint"] = problem.hint
+                        for problemsolved in solved_problems:
+                            if problemsolved["title"] == problemdata["title"]:
+                                problemdata["user"] = problemsolved['user']
+                                problemdata["buyed"] = problemsolved['buyed']
+                                problemdata["solved"] = True
+                                problemdata["flag"] = problemsolved["flag"]
 
-                    newchildren = []
-                    for children in problemdata["problem_children"]:
-                        newchildren.append(hash_pass(children))
-                        
-                    problemdata["problem_parents"] = newparents
-                    problemdata["problem_children"] = newchildren
-                    memcache.add("problem" + problem.title + "forteam" + userdata["teamname"],problemdata)
-                
+                    memcache.add("problem" + problem.title + "forteam" + userdata["teamname"],problemdata)   
                 problems.append(problemdata)
 
             data = {
-                "allproblems" : problems,
+                "allproblems" : problems, #note: switch to json.dumps(problems) eventually in order to let the client side do all the computation work
                 "points" : teamquery.points,
             }
             memcache.add('problemsforteam' + userdata['teamname'],data)

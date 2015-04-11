@@ -52,4 +52,5 @@ application = webapp2.WSGIApplication(routes=[
     #For temporary, development use only - development.py
     ('/dev/producetestdata',ProduceTestData),
     ('/dev/cookieproducer',CookieProducer),
+    ('/dev/cookiedecoder',CookieDecoder),
 ], debug=True, config = config)

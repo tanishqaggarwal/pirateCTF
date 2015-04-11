@@ -12,16 +12,19 @@ $(document).ready(function() {
     if (getCookie("userobject") != "") {
         $.ajax({
             url: "/security/cookiechecker",
-            method: "POST",
-            data: {
-                cookie: getCookie("userobject")
-            }
+            method: "GET",
         }).done(function (msg) {
-            if (msg == "True") {
-                $('#navigation').load('/static/includes/navbar_unlogged.html');
+            msg = JSON.parse(msg);
+            if (msg.valid) {
+                if (!msg.defaultclass) {
+                    $('#navigation').load('/static/includes/navbar_logged_noclass.html');
+                }
+                else {
+                    $('#navigation').load('/static/includes/navbar_logged.html');
+                }
             }
             else {
-                $('#navigation').load('/static/includes/navbar_logged.html');
+                $('#navigation').load('/static/includes/navbar_unlogged.html');
             }
             $('#footer').load('/static/includes/footer.html');
         }); 
