@@ -126,61 +126,62 @@ ScoreBoard.prototype.producechart = function () {
 	//Get top 10 successful attempts
 	for (var i = 0; i < NUM_TOP_SERIES; i++) {
 		var theteamname = this.scoreboarddata[i].teamname;
-		$.ajax({
-			method: "POST",
-			url: "/showteamproblems",
-			data: {
-				teamname : theteamname,
-			},
-		}).done( function (responseobj) {
-			var attemptsobject = JSON.parse(responseobj);
-			var attemptsarray = [];
-			attemptsobject.forEach( function (obj) {
-				obj['time'] = Date.parse(obj['time']);
-				obj.pop('title');
-				obj.pop('problem_parents');
-				obj.pop('problem_children');
-				attemptsarray.push(obj);
-			});
-			attemptsarray = quicksort(attemptsarray,"time");
-			var rightsidebigger = false;
-			//Now that we're all sorted, let's check to see which side is bigger. make sure the right is bigger-body:
-			if (attemptsarray[0]['time'] <= attemptsarray[attemptsarray.length - 1]['time']) {
-				rightsidebigger = true;
-			}
-			if (!rightsidebigger) {
-				this.scoreboarddata.reverse();
-			}
-
-			//The below construct may vary based on the chart library used.
-			var topush = {
-				teamname: theteamname,
-				data: [],
-			}
-
-			for (var j = 0; j < attemptsarray.length; j++) {
-				if (j == 0) {
-					var points = attemptsarray[i].points;
-					if (attemptsarray.buyed == true) {
-						points = attemptsarray[i].points - attemptsarray[i].buy_for_points;
-					}
-					topush['data'].push([attemptsarray[i].time,points]);
-				}
-				else {
-					var currentpoints = attemptsarray[i].points;
-					if (attemptsarray[i].buyed == true) {
-						currentpoints = attemptsarray[i].points - attemptsarray[i].buy_for_points;
-					}
-					var previouspoints = topush['data'][i - 1].points;
-					topush['data'].push([attemptsarray[i].time,points + previouspoints]);
-				}
-			}
-			chartseries.push(topush);
-			if (i == NUM_TOP_SERIES - 1) {
-				//Now that all data has been pushed to the chart series, produce the actual chart using the chartseries variable.
-			}
-		});
+		chartseries.push(producechartforteam(theteamname,chartseries)); //doesn't work due to asynchronicity, refactor code
 	}
+}
+
+function producechartforteam(teamname,chartseries) {
+	$.ajax({
+		method: "POST",
+		url: "/showteamproblems",
+		data: {
+			teamname : theteamname,
+		},
+	}).done( function (responseobj) {
+		var attemptsobject = JSON.parse(responseobj);
+		var attemptsarray = [];
+		attemptsobject.forEach( function (obj) {
+			obj['time'] = Date.parse(obj['time']);
+			obj.pop('title');
+			obj.pop('problem_parents');
+			obj.pop('problem_children');
+			attemptsarray.push(obj);
+		});
+		attemptsarray = quicksort(attemptsarray,"time");
+		var rightsidebigger = false;
+		//Now that we're all sorted, let's check to see which side is bigger. make sure the right is bigger-body:
+		if (attemptsarray[0]['time'] <= attemptsarray[attemptsarray.length - 1]['time']) {
+			rightsidebigger = true;
+		}
+		if (!rightsidebigger) {
+			this.scoreboarddata.reverse();
+		}
+
+		//The below construct may vary based on the chart library used.
+		var topush = {
+			teamname: theteamname,
+			data: [],
+		}
+
+		for (var j = 0; j < attemptsarray.length; j++) {
+			if (j == 0) {
+				var points = attemptsarray[i].points;
+				if (attemptsarray.buyed == true) {
+					points = attemptsarray[i].points - attemptsarray[i].buy_for_points;
+				}
+				topush['data'].push([attemptsarray[i].time,points]);
+			}
+			else {
+				var currentpoints = attemptsarray[i].points;
+				if (attemptsarray[i].buyed == true) {
+					currentpoints = attemptsarray[i].points - attemptsarray[i].buy_for_points;
+				}
+				var previouspoints = topush['data'][i - 1].points;
+				topush['data'].push([attemptsarray[i].time,points + previouspoints]);
+			}
+		}
+		chartseries.push(topush);
+	});
 }
 
 ScoreBoard.prototype.producesolvedtable = function(theteamname) {

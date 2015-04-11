@@ -31,7 +31,6 @@ application = webapp2.WSGIApplication(routes=[
     ('/problems',DisplayProblems),
     ('/shell',Shell),
     ('/chat',Chat),
-    ('/account',Account),
     ('/team',Team),
     ('/updates',DisplayUpdates),
 ] + [

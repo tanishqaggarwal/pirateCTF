@@ -336,15 +336,19 @@ class Team(webapp2.RequestHandler):
         if not data:
             data = {
                 "teamname" : userdata['teamname'],
+                "teamtype" : "",
                 "teampassphrase" : "",
                 "usernames" : [],
+                "usernameslength" : 0,
                 "points" : 0
             }
             userquery = ndb.gql("SELECT username FROM Users WHERE teamname = :teamn", teamn = userdata['teamname']).fetch(limit=None)
             teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn", teamn = userdata['teamname']).get()
             data['teampassphrase'] = teamquery.passphrase
+            data["teamtype"] = teamquery.teamtype
             for users in userquery:
                 data['usernames'].append(users.username)
+            data["usernameslength"] = len(data["usernames"])
             data['points'] = teamquery.points
             memcache.add('teamfor' + userdata['teamname'],data)
             return data
@@ -359,49 +363,11 @@ class Team(webapp2.RequestHandler):
                 return
             if userobject:
                 typeofaction = self.request.get("typeofaction")
-                if typeofaction == "changepassphrase":
-                    form_dictionary = {
-                        "teamname" : self.request.get("teamname"),
-                        "oldteampassphrase" : self.request.get("oldteampassphrase"),
-                        "newteampassphrase" : self.request.get("newteampassphrase")
-                    }
-                    teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn AND passphrase = :passphr",teamn=form_dictionary['teamname'],passphr=form_dictionary['oldteampassphrase']).get()
-                    if teamquery:
-                        teamquery.passphrase = form_dictionary['newteampassphrase']
-                        teamquery.put()
-                        self.response.out.write("team passphrase updated")
-                    else:
-                        self.response.out.write("no team found")
-                elif typeofaction == "changeteamname":
-                    form_dictionary = {
-                        "oldteamname" : self.request.get("oldteamname"),
-                        "passphrase" : self.request.get("passphrase"),
-                        "newteamname" : self.request.get("newteamname"),
-                    }
-                    teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn AND teampassphrase = :passphr",teamn = form_dictionary['oldteamname'], passphr= form_dictionary['passphrase']).get()
-                    if teamquery:
-                        teamquery.teamname = newteamname
-                        teamquery.put()
-                        userquery = ndb.gql("SELECT * FROM Users WHERE teamname = :teamn", teamn = form_dictionary['oldteamname']).fetch(limit=None)
-                        for auser in userquery:
-                            auser.teamname = newteamname
-                            auser.put()
-                        if userobject.teamname == form_dictionary['oldteamname']:
-                            userobject = {
-                                "username" : userobject.username,
-                                "teamname" : form_dictionary['newteamname'],
-                                "classname" : userobject.classname,
-                            }
-                            self.response.delete_cookie("userobject")
-                            self.set_cookie("userobject",encrypt(json.dumps(userobject)))
-                        self.response.out.write("teamname changed")
-                    else:
-                        self.response.out.write("no team found")
-                elif typeofaction == "removeteamuser":
+                if typeofaction == "removeme":
                     form_dictionary = {
                         "teamname" : self.request.get("teamname"),
                         "passphrase" : self.request.get("passphrase"),
-                        "username" : self.request.get("username"),
+                        "username" : userobject["username"],
                     }
                     teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn AND teampassphrase = :passphr",teamn = form_dictionary['teamname'], passphr= form_dictionary['passphrase']).get()
                     if teamquery:
@@ -413,26 +379,6 @@ class Team(webapp2.RequestHandler):
                         self.response.out.write("user removed from team")
                     else:
                         self.response.out.write("no team found")
-                elif typeofaction == "deleteteam":
-                    teamname = self.request.get("teamname")
-                    passphrase = self.request.get("passphrase")
-                    teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn AND teampassphrase = :passphr",teamn = form_dictionary['teamname'], passphr= form_dictionary['passphrase']).get()
-                    if teamquery:
-                        userquery = ndb.gql("SELECT * FROM Users WHERE teamname = :teamn", teamn = teamname).fetch(limit=None)
-                        for auser in userquery:
-                            auser.key.delete()
-                        if json.loads(decrypt(self.request.cookies.get("userobject"))).teamname == teamname:
-                            self.response.delete_cookie("userobject")
-                        for attempts in teamquery.successful_attempts:
-                            problemquery = ndb.gql("SELECT num_solved FROM Problems WHERE title = :titl",titl = attempts.problem).get()
-                            if problemquery:
-                                problemquery["num_solved"] -= 1
-                                problemquery.put()
-
-                        teamquery.key.delete()
-                        self.response.out.write("team deleted")
-                    else:
-                        self.response.out.write("no team found")
                 else:
                     self.response.out.write("illegal action")
             else:
@@ -440,72 +386,6 @@ class Team(webapp2.RequestHandler):
                 self.redirect("/login")
         else:
             self.response.set_cookie("redirectto","/team")
-            self.redirect("/login")
-
-
-class Account(webapp2.RequestHandler):
-    def get(self):
-        if users.get_current_user():
-            try:
-                userobject = json.loads(decrypt(self.request.cookies.get("userobject")))
-            except ValueError as e:
-                self.response.out.write("invalid user cookie")
-                return
-            if userobject:
-                template = jinja_environment.get_template("account.html")
-                self.response.out.write(template.render({}))
-            else:
-                self.response.set_cookie("redirectto","/account")
-                self.redirect("/login")
-        else:
-            self.response.set_cookie("redirectto","/account")
-            self.redirect("/login")
-    def post(self):
-        if users.get_current_user():
-            try:
-                userobject = json.loads(decrypt(self.request.cookies.get("userobject")))
-            except ValueError as e:
-                self.response.out.write("invalid user cookie")
-                return
-            if userobject:
-                typeofaction  = self.request.get("typeofaction")
-                oldteam       = self.request.get("oldteam")
-                oldpassphrase = self.request.get("oldpassphrase")
-                newteam       = self.request.get("newteam")
-                newpassphrase = self.request.get("newpassphrase")
-
-                if typeofaction == "change team":
-                    oldteamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn AND passphrase = :teamp",teamn=oldteam,teamp=hash_pass(oldpassphrase)).get()
-                    newteamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn AND passphrase = :teamp",teamn=newteam,teamp=hash_pass(newpassphrase)).get()
-                    if not oldteamquery:
-                        self.response.out.write("old team not found")
-                        return
-                    elif not newteamquery:
-                        self.response.out.write("new team not found")
-                        return
-                    else:
-                        numusers = ndb.gql("SELECT * FROM Users WHERE teamname = :teamn", teamn=newteamquery.teamname).fetch(limit=None)
-                        if len(numusers) >= 5:
-                            self.response.out.write("new team already has five people")
-                            return
-                        else:
-                            userquery = ndb.gql("SELECT * FROM Users WHERE username = :usrn", usrn = userobject['username']).get()
-                            if userquery:
-                                userobject['teamname'] = newteamquery.teamname
-                                self.set_cookie("userobject",encrypt(json.dumps(userobject)))
-                                self.response.out.write("success")
-                            else:
-                                self.response.delete_cookie("userobject")
-                                self.response.out.write("invalid user cookie")
-                                self.redirect("/")
-                else:
-                    self.response.out.write("illegal action")
-                #if necessary add new action types later
-            else:
-                self.response.set_cookie("redirectto","/account")
-                self.redirect("/login")
-        else:
-            self.response.set_cookie("redirectto","/account")
             self.redirect("/login")
 
 class Login(webapp2.RequestHandler):

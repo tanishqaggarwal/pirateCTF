@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html class="full" lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Team | PirateCTF 2015</title>
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body style = "margin-top: 50px;">
+
+    <div id = "navigation"></div>
+
+<div class = "container">
+    <div class = "row">
+    <div class = "page-header">
+        <h1 class = "header">Team</h1>
+    </div>
+    <div class = "row">
+        <div class = "col-md-6">
+            <!--Panel-->
+            <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="teaminfoheading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#teaminfo" aria-expanded="true" aria-controls="teaminfo">
+                  Team: {{ teamname|safe }} <div class = "pull-right">Points: {{ points|safe }}</div>
+                </a>
+              </h4>
+            </div>
+            <div id="teaminfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="teaminfoheading">
+              <div class="panel-body">
+                <p>Your team passphrase is <strong>{{ teampassphrase|safe }}</strong>.</p>
+                Team Members:
+                <ul>
+                    {% for member in usernames %}
+                        <li>{{ member|safe }}</li>
+                    {% endfor %}
+                </ul>
+                <p>Your team has {{ usernameslength }} members. {% if usernameslength == 5 %}<strong>No more team members can be added.</strong>{% endif %}</p>
+                <p>Your team is a <strong>{{ teamtype|safe }}</strong> team.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+         <div class = "col-md-6">
+            <!--Panel-->
+            <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="teamscoreprogressionheading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#teamscoreprogression" aria-expanded="true" aria-controls="teamscoreprogression">
+                  Team Score Progression
+                </a>
+              </h4>
+            </div>
+            <div id="teamscoreprogression" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="teamscoreprogressionheading">
+              <div class="panel-body">
+                A chart would go here
+              </div>
+            </div>
+          </div>
+         <div class="panel panel-danger">
+            <div class="panel-heading" role="tab" id="removemefromteamheading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#removemefromteam" aria-expanded="true" aria-controls="removemefromteam">
+                  Remove Yourself From Team
+                </a>
+              </h4>
+            </div>
+            <div id="removemefromteam" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="removemefromteamheading">
+              <div class="panel-body">
+                <p>Are you sure that you want to remove yourself from this team? You can still join this team whenever you choose, as long as the team hasn't been deleted or its passphrase is not changed without your knowledge.</p>
+                <div class = "pull-right"><button class = "btn btn-large btn-danger">Remove Me From {{ teamname|safe }}</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+    <div id = "footer"></div>
+</body>
+
+<script src="/static/js/external/jquery-1.11.2.min.js"></script>
+<script src="/static/js/external/bootstrap.min.js"></script>
+<script src = "/static/js/custom/production/navload.js"></script>
+
+</html>
