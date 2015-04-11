@@ -25,18 +25,8 @@ class Teams(ndb.Model):
 	shell_username      = ndb.StringProperty(required=True)
 	shell_password      = ndb.StringProperty(required=True)
 	passphrase          = ndb.StringProperty(required=True)
-	teamtype            = ndb.StringProperty(required=True)
+	teamtype            = ndb.StringProperty(required=True,choices=["Competitive","Observer"])
 	classname           = ndb.StringProperty(default="defaultclass")
-
-class Classes(ndb.Model):
-	classname                = ndb.StringProperty(required=True)
-	classpassphrase          = ndb.StringProperty(required=True)
-	classadult_email         = ndb.StringProperty(required=True)
-	classadult_firstname     = ndb.StringProperty(required=True)
-	classadult_lastname      = ndb.StringProperty(required=True)
-	classadult_phonenumber   = ndb.StringProperty(required=True)
-	classadult_postaladdress = ndb.TextProperty(required=True)
-	class_school             = ndb.StringProperty(required=True)
 
 class Users(ndb.Model):
 	user      = ndb.UserProperty(required=True)

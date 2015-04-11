@@ -25,7 +25,6 @@ application = webapp2.WSGIApplication(routes=[
     ('/about', About),
     ('/login',Login),
     ('/logout',Logout),
-    ('/class',Class),
     ('/register', Register),
     ('/scoreboard',Scoreboard),
     ('/showteamproblems',ShowProblemsSolved),
