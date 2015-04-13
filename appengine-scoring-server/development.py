@@ -7,6 +7,7 @@ import jinja2
 import os
 import math
 import logging
+from random import randomint
 from securefunctions import *
 
 import pickle
@@ -62,9 +63,33 @@ class ProduceTestData(webapp2.RequestHandler):
             theproblem.graderfunction = pickle.dumps(graderfunction(theproblem.flag,x))
             theproblem.flag = "flag_for_problem_" + str(x)
             theproblem.problem_type = problemtypes[(x - 1) % 8]
-            theproblem.problem_parents = [str("Problem " + str(x - 1))] if x > 1 else []
-            theproblem.problem_children = [str("Problem " + str(x + 1))] if x < NUMBER_PROBLEMS else []
             problems.append(theproblem)
+
+        parent_structure = []
+        for x in range(1,NUMBER_PROBLEMS + 1):
+            parent_structure.append({
+                "parent": x,
+                "children": [],
+                })
+        for x in range(1,NUMBER_PROBLEMS + 1):
+            num_parents = randint(1,x)
+            parentsFound = 0
+            for parent in parent_structure:
+                if x in parent["children"]:
+                    parentsFound += 1
+                else:
+                    if parentsFound < num_parents:
+                        parent["children"].append(x)
+                        parentsFound += 1
+
+        for x in range(1,NUMBER_PROBLEMS + 1):
+            set_parents = []
+            for parent in parent_structure:
+                if x in parent["children"]:
+                    set_parents.append(parent["parent"])
+            problems[x].problem_parents = set_parents
+            problems[x].problem_children = parent_structure[x]["children"]
+
         logging.info("problems generated")
         return problems
     def produce_sample_users(self):
@@ -90,27 +115,12 @@ class ProduceTestData(webapp2.RequestHandler):
             theteam.phone             = "(609)-" + str(x)
             theteam.shell_username    = "piratectfusername" + str(x)
             theteam.shell_password    = "piratectfpassword" + str(x)
+            theteam.points            = randint(1,1000) * 10
             theteam.passphrase        = "passphrase" + str(x)
             theteam.teamtype          = "Competitive" if x % 1000 != 0 else "Observer"
             teams.append(theteam)
         logging.info("teams generated")
         return teams
-    def produce_sample_classes(self):
-        logging.info("generating classes")
-        classes = []
-        for x in range(1,NUMBER_CLASSES + 1):
-            theclass = Classes()
-            theclass.classname = "Class " + str(x)
-            theclass.classpassphrase = "passphrase" + str(x)
-            theclass.classadult_firstname = "Pirate"
-            theclass.classadult_lastname = "Teacher"
-            theclass.classadult_email = "pirateteacher@school.edu"
-            theclass.classadult_phonenumber = "(609)-" + str(x)
-            theclass.classadult_postaladdress = str(x) + " Pirate Way,\nThe Ship, CA 69696"
-            theclass.class_school = "School " + str(x)
-            classes.append(theclass)
-        logging.info("classes generated")
-        return classes
     def produce_sample_updates(self):
         logging.info("generating updates")
         updates = []
