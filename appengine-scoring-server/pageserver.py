@@ -41,38 +41,41 @@ class DisplayUpdates(webapp2.RequestHandler):
         template_values = self.populateServerContent()
         self.response.out.write(template.render(template_values))
     def populateServerContent(self):
-        data = memcache.get('updates')
-        microdata = memcache.get('microupdates')
-        if not data:
-            updateslist = []
-            updates_list = ndb.gql("SELECT * FROM Updates ORDER BY time DESC").fetch(limit=None)
+        if self.app.config.get("competition_starts") <= datetime.datetime.now():
+            data = memcache.get('updates')
+            microdata = memcache.get('microupdates')
+            if not data:
+                updateslist = []
+                updates_list = ndb.gql("SELECT * FROM Updates ORDER BY time DESC").fetch(limit=None)
+                
+                for update in updates_list:
+                    updatedata = {
+                        "hash"   : hash_pass(update.title),
+                        "title"  : update.title,
+                        "update" : update.update,
+                        "time"   : update.time.strftime("%b %d %Y %H:%M"),
+                    }
+                    updateslist.append(updatedata)
+
+                memcache.add('updates',updateslist)
+
+            if not microdata:
+                microupdateslist = []
+                microupdates_list = ndb.gql("SELECT * FROM MicroUpdates ORDER BY time DESC").fetch(limit=None)
+
+                for microupdate in microupdates_list:
+                    microupdatedata = {
+                        "title"  : microupdate.title,
+                        "update" : microupdate.update,
+                        "time"   : microupdate.time.strftime("%b %d %Y %H:%M"),
+                    }
+                    microupdateslist.append(microupdatedata)
+
+                memcache.add('microupdates',microupdateslist)
             
-            for update in updates_list:
-                updatedata = {
-                    "hash"   : hash_pass(update.title),
-                    "title"  : update.title,
-                    "update" : update.update,
-                    "time"   : update.time.strftime("%b %d %Y %H:%M"),
-                }
-                updateslist.append(updatedata)
-
-            memcache.add('updates',updateslist)
-
-        if not microdata:
-            microupdateslist = []
-            microupdates_list = ndb.gql("SELECT * FROM MicroUpdates ORDER BY time DESC").fetch(limit=None)
-
-            for microupdate in microupdates_list:
-                microupdatedata = {
-                    "title"  : microupdate.title,
-                    "update" : microupdate.update,
-                    "time"   : microupdate.time.strftime("%b %d %Y %H:%M"),
-                }
-                microupdateslist.append(microupdatedata)
-
-            memcache.add('microupdates',microupdateslist)
-        
-        return {"microupdates" : memcache.get("microupdates"), "updates" : memcache.get("updates")}
+            return {"microupdates" : memcache.get("microupdates"), "updates" : memcache.get("updates")}
+        else:
+            return {"competition": False}
 
 class DisplayProblems(webapp2.RequestHandler):
     def get(self):
@@ -94,70 +97,73 @@ class DisplayProblems(webapp2.RequestHandler):
             self.redirect("/login")
 
     def populateServerContent(self,userdata):
-        data = memcache.get('problemsforteam' + userdata['teamname'])
-        if not data:
-            problemquery = ndb.gql("SELECT * FROM Problems ORDER BY points ASC, title ASC").fetch(limit=None)
-            teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn",teamn = userdata['teamname']).get()
-            solved_problems = []
-            for solved_problem in teamquery.successful_attempts:
-                solved_problems.append({
-                    "title"   : solved_problem.problem,
-                    "buyed"   : solved_problem.buyed,
-                    "user"    : solved_problem.user,
-                    "flag"    : solved_problem.attempt,
-                    })
+        if self.app.config.get("competition_starts") <= datetime.datetime.now():
+            data = memcache.get('problemsforteam' + userdata['teamname'])
+            if not data:
+                problemquery = ndb.gql("SELECT * FROM Problems ORDER BY points ASC, title ASC").fetch(limit=None)
+                teamquery = ndb.gql("SELECT * FROM Teams WHERE teamname = :teamn",teamn = userdata['teamname']).get()
+                solved_problems = []
+                for solved_problem in teamquery.successful_attempts:
+                    solved_problems.append({
+                        "title"   : solved_problem.problem,
+                        "buyed"   : solved_problem.buyed,
+                        "user"    : solved_problem.user,
+                        "flag"    : solved_problem.attempt,
+                        })
 
-            problems = []
-            for problem in problemquery:
-                problemdata = memcache.get("problem" + problem.title + "forteam" + userdata["teamname"])
-                if not problemdata:
-                    problemdata = {
-                        "hash"            : hash_pass(problem.title),
-                        "title"           : problem.title,
-                        "category"        : problem.problem_type,
-                        "num_solved"      : problem.number_solved,
-                        "points"          : problem.points,
-                        "solved"          : False,
-                        "buyed"           : False,
-                        "unlocked"        : False,
-                    }
-                    if self.app.config.get("problem_hierarchy"):
-                        problemdata["problem_parents"] = problem.problem_parents
-                        problemdata["problem_children"] = problem.problem_children
-                    else:
-                        pass
-                    
-                    if problemdata['problem_parents']:
-                        for parent in problemdata["problem_parents"]:
-                            for solvedproblem in solved_problems:
-                                if parent == solvedproblem["title"]:
-                                    problemdata["unlocked"] = True
-                                    break
-                    else:
-                        problemdata["unlocked"] = True
-                    
-                    if problemdata["unlocked"]:
-                        problemdata["buy_for_points"] = problem.buy_for_points
-                        problemdata["text"] = problem.text
-                        problemdata["hint"] = problem.hint
-                        for problemsolved in solved_problems:
-                            if problemsolved["title"] == problemdata["title"]:
-                                problemdata["user"] = problemsolved['user']
-                                problemdata["buyed"] = problemsolved['buyed']
-                                problemdata["solved"] = True
-                                problemdata["flag"] = problemsolved["flag"]
+                problems = []
+                for problem in problemquery:
+                    problemdata = memcache.get("problem" + problem.title + "forteam" + userdata["teamname"])
+                    if not problemdata:
+                        problemdata = {
+                            "hash"            : hash_pass(problem.title),
+                            "title"           : problem.title,
+                            "category"        : problem.problem_type,
+                            "num_solved"      : problem.number_solved,
+                            "points"          : problem.points,
+                            "solved"          : False,
+                            "buyed"           : False,
+                            "unlocked"        : False,
+                        }
+                        if self.app.config.get("problem_hierarchy"):
+                            problemdata["problem_parents"] = problem.problem_parents
+                            problemdata["problem_children"] = problem.problem_children
+                        else:
+                            pass
+                        
+                        if problemdata['problem_parents']:
+                            for parent in problemdata["problem_parents"]:
+                                for solvedproblem in solved_problems:
+                                    if parent == solvedproblem["title"]:
+                                        problemdata["unlocked"] = True
+                                        break
+                        else:
+                            problemdata["unlocked"] = True
+                        
+                        if problemdata["unlocked"]:
+                            problemdata["buy_for_points"] = problem.buy_for_points
+                            problemdata["text"] = problem.text
+                            problemdata["hint"] = problem.hint
+                            for problemsolved in solved_problems:
+                                if problemsolved["title"] == problemdata["title"]:
+                                    problemdata["user"] = problemsolved['user']
+                                    problemdata["buyed"] = problemsolved['buyed']
+                                    problemdata["solved"] = True
+                                    problemdata["flag"] = problemsolved["flag"]
 
-                    memcache.add("problem" + problem.title + "forteam" + userdata["teamname"],problemdata)   
-                problems.append(problemdata)
+                        memcache.add("problem" + problem.title + "forteam" + userdata["teamname"],problemdata)   
+                    problems.append(problemdata)
 
-            data = {
-                "allproblems" : problems, #note: switch to json.dumps(problems) eventually in order to let the client side do all the computation work
-                "points" : teamquery.points,
-            }
-            memcache.add('problemsforteam' + userdata['teamname'],data)
-            return data
+                data = {
+                    "allproblems" : problems, #note: switch to json.dumps(problems) eventually in order to let the client side do all the computation work
+                    "points" : teamquery.points,
+                }
+                memcache.add('problemsforteam' + userdata['teamname'],data)
+                return data
+            else:
+                return data
         else:
-            return data
+            return {"competition" : False}
 
 class About(webapp2.RequestHandler):
     def get(self):
@@ -184,16 +190,19 @@ class Shell(webapp2.RequestHandler):
             self.response.set_cookie("redirectto","/shell")
             self.redirect("/login")
     def populateServerContent(self,userdata):
-        data = memcache.get('shellfor' + userdata['teamname'])
-        if not data:
-            data = {}
-            teamquery = ndb.gql("SELECT shell_username, shell_password FROM Teams WHERE teamname = :teamn",teamn=userdata['teamname']).get()
-            data['shell_username'] = teamquery.shell_username
-            data['shell_password'] = teamquery.shell_password
-            memcache.add('shellfor' + userdata['teamname'],data)
-        data["IP"] = DOMAIN_NAME
-        data["PORT"] = SHELL_SERVER_PORT
-        return data
+        if self.app.config.get("competition_starts") <= datetime.datetime.now():
+            data = memcache.get('shellfor' + userdata['teamname'])
+            if not data:
+                data = {}
+                teamquery = ndb.gql("SELECT shell_username, shell_password FROM Teams WHERE teamname = :teamn",teamn=userdata['teamname']).get()
+                data['shell_username'] = teamquery.shell_username
+                data['shell_password'] = teamquery.shell_password
+                memcache.add('shellfor' + userdata['teamname'],data)
+            data["IP"] = DOMAIN_NAME
+            data["PORT"] = SHELL_SERVER_PORT
+            return data
+        else:
+            return {"competition" : False}
 
 class Chat(webapp2.RequestHandler):
     def get(self):
@@ -219,30 +228,35 @@ class Scoreboard(webapp2.RequestHandler):
         template_values = self.populateServerContent()
         self.response.out.write(template.render(template_values))
     def populateServerContent(self):
-        data = memcache.get('scoreboard')
-        if not data:
-            teamquery  = ndb.gql("SELECT * FROM Teams ORDER BY points DESC").fetch(limit=None)
-            data = {
-                "data" : []
-            }
-            teamdata = []
-            for team in teamquery:
-                teamdat = memcache.get("teaminfoforteam" + team.teamname)
-                if teamdat:
-                    data["data"].append(teamdat)
-                else:
-                    teamdat = {
-                        "teamname" : team.teamname, 
-                        "teamtype" : team.teamtype,
-                        "school" : team.school,
-                        "points" : team.points,
-                        "time" : team.last_successful,
-                    }
-                    memcache.add("teaminfoforteam" + team.teamname,teamdat)
-                    data["data"].append(teamdat)
-            memcache.add('scoreboard',data)
-        return data
-        
+        if self.app.config.get("competition_starts") <= datetime.datetime.now():
+            data = memcache.get('scoreboard')
+            if not data:
+                teamquery  = ndb.gql("SELECT * FROM Teams ORDER BY points DESC , last_successful ASC").fetch(limit=None)
+                data = {
+                    "data" : []
+                }
+                teamdata = []
+                for team in teamquery:
+                    teamdat = memcache.get("teaminfoforteam" + team.teamname)
+                    if teamdat:
+                        data["data"].append(teamdat)
+                    else:
+                        teamdat = {
+                            "teamname" : team.teamname, 
+                            "teamtype" : team.teamtype,
+                            "school" : team.school,
+                            "points" : team.points,
+                            "time" : team.last_successful,
+                        }
+                        memcache.add("teaminfoforteam" + team.teamname,teamdat)
+                        data["data"].append(teamdat)
+                memcache.add('scoreboard',data)
+            return data
+        else:
+            return {"competition" : False}
+
+
+#### MAJOR TODO: Fix this shit up        
 class ShowProblemsSolved(webapp2.RequestHandler):
     def post(self):
         senddata = memcache.get("showproblemsforteam" + self.request.get("teamname"))
@@ -265,27 +279,32 @@ class ShowProblemsSolved(webapp2.RequestHandler):
 
                 problems = []
                 for problem in problemquery:
-                    problemdata = {
-                        "title"           : problem["title"],
-                        "category"        : problem["category"],
-                        "num_solved"      : problem["num_solved"],
-                        "points"          : problem["points"],
-                        "buy_for_points"  : problem["buy_for_points"],
-                        "text"            : problem["problem"],
-                        "hint"            : problem["hint"],
-                        "problem_parents" : problem["problem_parents"],
-                        "problem_children": problem["problem_children"],
-                        "solved"          : False,
-                        "buyed"           : False,
-                        "time"            : "",
-                    }
-                    for problemsolved in solved_problems: #A for loop inside a for loop is inefficient, but it gets the job done and doesn't take too much time since the number of problems is small
-                        if problemsolved.title == problemdata.title:
-                            problemdata.append("user",problemsolved.user)
-                            problemdata.buyed = problemsolved.buyed
-                            problemdata.solved = True
-                            problemdata.flag = problemsolved.flag
-                            problemdata.time = problemsolved.time
+                    problemdata = memcache.get("showproblem" + problem.title + "forteam" + self.request.get("teamname"))
+                    if not problemdata:
+                        problemdata = memcache.get("problem" + problem.title + "forteam" + self.request.get("teamname"))
+                        if not problemdata:
+                            problemdata = {
+                                "title"           : problem["title"],
+                                "category"        : problem["category"],
+                                "num_solved"      : problem["num_solved"],
+                                "points"          : problem["points"],
+                                "buy_for_points"  : problem["buy_for_points"],
+                                "text"            : problem["problem"],
+                                "hint"            : problem["hint"],
+                                "problem_parents" : problem["problem_parents"],
+                                "problem_children": problem["problem_children"],
+                                "solved"          : False,
+                                "buyed"           : False,
+                                "time"            : "",
+                            }
+                            for problemsolved in solved_problems: #A for loop inside a for loop is inefficient, but it gets the job done and doesn't take too much time since the number of problems is small
+                                if problemsolved.title == problemdata.title:
+                                    problemdata.append("user",problemsolved.user)
+                                    problemdata.buyed = problemsolved.buyed
+                                    problemdata.solved = True
+                                    problemdata.flag = problemsolved.flag
+                                    problemdata.time = problemsolved.time
+
                     problems.append(problemdata)
 
                 data = {

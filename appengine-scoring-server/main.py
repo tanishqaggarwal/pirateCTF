@@ -13,10 +13,14 @@ from development import *
 from securefunctions import *
 
 config = {
-    "problem_hierarchy" : True,
-    "problem_explanation" : True,
-    "buyable" : True,
-} #set of parameters that enables various pirateCTF-specific features, such as the ability to have a problem hierarchy, the requirement for users to submit an explanation for every problem attempt, and the ability for users to buy flags for points.
+    "problem_hierarchy" : True, #use a problem hierarchical structure or just plain old CTF-style? TODO: implement in problems.html
+    "problem_explanation" : True, #require submission of a problem explanation or not? TODO: implement in problems.html
+    "buyable" : True, #Can users buy problems? TODO: implement in problems.html
+    "competition_starts" : datetime.datetime(2015,1,1,12,0,0,0), #When competition starts TODO: implement (front and back)
+    "competition_ends" : datetime.datetime(2015,12,1,12,0,0,0) #When competition ends TODO: implement (front and back)
+    "permit_viewing" : True, #allow other users to see what problems a team has solved from the scoreboard TODO: implement (front and back)
+}
+
 
 application = webapp2.WSGIApplication(routes=[
     #Serves pages to main users - pageserver.py
