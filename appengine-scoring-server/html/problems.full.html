@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html class="full" lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Problems | PirateCTF 2015</title>
+
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/fullpage.css" rel="stylesheet">
+    <link href="/static/css/roboto.min.css" rel="stylesheet">
+    <link href="/static/css/material.min.css" rel="stylesheet">
+    <link href="/static/css/ripples.min.css" rel="stylesheet">
+    <script src="/static/js/external/jquery-1.11.2.min.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body style = "margin-top: 50px;">
+
+    <div id = "navigation"></div>
+
+    <div class = "container">
+        <div class = "row">
+        <h1 class = "header">Problems</h1><hr />
+        <p class = "text-center"><a id = "problemdisplayswitcher">View basic problem viewer</a></p>
+        <!-- Just in case you're curious, the hashes for the various HTML elements of each problem can be generated with the following lines of Python:
+        import hmac
+        return hmac.new("w0w_s0_s3cr3t", "PROBLEM NAME").hexdigest()
+         -->
+        <div class = "pull-right">
+            <h2>Your Points: {{ points }}</h2>
+            <br />
+        </div>
+        </div>
+        <div class = "row" id = "hierarchy_container">
+            <div class = "row">
+                <div class = "col-md-12"> <p>Double-click on a problem to view its information and "zoom in" to its graph. Note: if the graph is ugly or you're having trouble viewing nodes, <strong>you can drag them around!</strong></p>
+                <p>Key: <span class = "label label-success">Solved</span>, <span class = "label label-warning">Bought</span>, <span class = "label label-danger">Unsolved</span>, <span class = "label label-default">Locked</span>.</p>
+                </div>
+            </div>
+            <div class = "row">
+                <div class = "col-md-12" id = "hierarchy_problem_viewer"></div>
+            </div>
+            <div class = "row">
+                <div class = "col-md-12" id = "hierarchy_div">
+                    <canvas id = "problemhierarchy" width = "100" height = "100"></canvas>
+                </div>
+            </div>
+            <div class = "row" id = "hierarchy_local_viewer_container">
+                <div class = "col-md-12" id = "hierarchy_local_div">
+                    <div class = "row" id = "return_button_container">
+                        <div class = "col-md-12 pull-center">
+                            <button class = "btn btn-large btn-success" onclick="returnButtonHandler();">Return to Master Problem Viewer</button>
+                        </div>
+                    </div>
+                    <canvas id = "problemlocalhierarchy" width = "100" height = "100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class = "row">
+        <div id = "problemviewer" class = "visible">
+        <script>
+            $("#problemviewer").toggle();
+        </script>
+        {% for problem in allproblems %}
+      <div class="panel panel-default {% if problem['buyed'] %} panel-warning {% elif problem['solved'] %} panel-success {% elif problem['unlocked'] %} panel-danger {% else %} {% endif %}" id = "{{ problem['hash'] | safe }}panel">
+        <div class="problem-header panel-heading" data-toggle="collapse" data-target="#{{ problem['hash'] | safe }}">
+            <h4 class="panel-title">
+                {% if problem['unlocked'] %}{% else %}<span class="glyphicon glyphicon-lock" aria-hidden="true"></span>{% endif %} {{ problem['title'] }}
+
+                {% if problem['num_solved'] is sameas 0 %}
+                    <span class = "label label-danger">Unsolved By All</span>
+                {% else %}
+                    <span class = "label label-success">Solved by {{ problem['num_solved'] }} {% if problem['num_solved'] > 1 %}Teams{% else %}Team{% endif %}</span> 
+                {% endif %}
+
+                <span class = "label label-primary">{{ problem['points'] }} Points</span>
+
+                <div class="pull-right"><span class = "label label-primary">{{ problem['category'] }}</span> 
+            </h4>
+        </div>
+
+        <div class="panel-collapse collapse {% if not problem['solved'] and problem['unlocked'] %} in {%endif%}" id="{{ problem['hash'] | safe }}" style="">
+            <div class="problem-body panel-body">
+                {% if problem["unlocked"] %}
+                <ul class="nav nav-tabs">
+                    <li class="{% if problem['solved'] %}{% else %}active{% endif %}"><a href="#{{ problem['hash'] | safe }}solve" data-toggle="tab">Problem</a>
+                    </li>
+                    {% if problem['solved'] %}
+                    {% else %}
+                    <li><a href="#{{ problem['hash'] | safe }}buy" data-toggle="tab" data-pid="{{ problem['hash'] | safe }}buy">Buy</a>
+                    </li>
+                    {% endif %}
+                    <li><a href="#{{ problem['hash'] | safe }}hint" data-toggle="tab" data-pid="{{ problem['hash'] | safe }}hint">Hint (doesn't cost points!)</a>
+                    </li>
+                    <li><a href="#{{ problem['hash'] | safe }}dependencies" data-toggle="tab" data-pid="{{ problem['hash'] | safe }}dependencies">Dependencies</a>
+                    </li>
+                    {% if problem['solved'] %}
+                    <li class = "{% if problem['solved'] %}active{% endif %}"><a href="#{{ problem['hash'] | safe }}flag" data-toggle="tab" data-pid="{{ problem['hash'] | safe }}flag">Flag</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% else %}
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#{{ problem['hash'] | safe }}solve" data-toggle="tab">Locked</a>
+                    </li>
+                </ul>
+                {% endif %}
+                <div class="tab-content">
+                    {% if problem["unlocked"] %}
+                    <div class="tab-pane{% if problem['solved'] %}{% else %} active{% endif %}" id="{{ problem['hash'] | safe }}solve">
+                        <div class="panel-body">
+        <!-- TODO : ADD problem effects (popups), validate data, create modal for problem explanation -->
+                            
+    <p class="problem-description">
+        {{ problem['text'] }}
+    </p>
+    {% if problem['solved'] %}
+    {% else %}
+    <div class="row">
+        <button class = "btn btn-large btn-success" data-toggle="modal" data-target="#{{ problem['hash'] | safe }}solvemodal">Enter Flag</button>
+    </div>
+    {% endif %}
+                        </div>
+                    </div>
+                    {% if problem['solved'] %}
+                    {% else %}
+                    <div class="tab-pane" id="{{ problem['hash'] | safe }}buy">
+                        <div class="panel-body">
+                            Would you like to buy the flag to this problem? It will cost {{ problem['buy_for_points'] | safe }} points.
+                            <br /><br /><button class = "btn btn-large btn-warning" data-toggle="modal" data-target="#{{ problem['hash'] | safe }}buymodal">Buy</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="tab-pane" id="{{ problem['hash'] | safe }}hint">
+                        <div class="panel-body">
+                            {{ problem['hint'] }}
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="{{ problem['hash'] | safe }}dependencies">
+                        <div class="panel-body">
+                            {% if problem["problem_parents"] is defined %}
+                            In order to unlock this problem, you must have solved one of the following:
+                            <ul>
+                                {% for parent in problem["problem_parents"]%}
+                                    <li>{{ parent | safe }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            This problem has no dependencies; it is the first problem of a sequence.
+                            {% endif %}
+                            {% if problem["problem_children"] is defined %}
+                            Once you solve or buy this problem, you will unlock all of the following problems:
+                            <ul>
+                                {% for child in problem["problem_children"]%}
+                                    <li>{{ child | safe }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            This problem is not a dependency of any other problem; it is the final problem in a sequence.
+                            {% endif %}
+                        </div>
+                    </div>
+                     <div class="tab-pane{% if problem['solved'] %} active{% endif %}" id="{{ problem['hash'] | safe }}flag">
+                        <div class="panel-body">
+                            Hey, great job! You solved this problem! (Unless you bought it.) In either case, if you forgot the flag and need it, here it is: <strong>{{ problem['flag'] }}</strong>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="tab-pane active" id="{{ problem['hash'] | safe }}buy">
+                        <div class="panel-body">
+                            This problem is currently locked. In order to solve this problem, you must solve or buy one of the following problems:
+                            <ul>
+                                {% for parent in problem["problem_parents"]%}
+                                    <li>{{ parent | safe }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% for problem in allproblems %}    
+    </div>
+    </div>
+        <div class="modal fade" id="{{ problem['hash'] | safe }}solvemodal" tabindex="-1" role="dialog" aria-labelledby="{{ problem['hash'] | safe }}solvemodalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="{{ problem['hash'] | safe }}solvemodalLabel">Enter Flag for "{{ problem['title'] | safe }}"</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+                <fieldset>
+
+                <p><strong>Special Note: </strong>We require that you fill out the "explanation" field: we explain why <a href = "/about#faq-whyproblemexplanations">here</a>.</p>
+                <!-- Text input-->
+                <div class="control-group">
+                  <label class="control-label" for="attempt">Flag</label>
+                  <div class="controls">
+                    <input id="{{ problem['hash'] | safe }}solvemodalattempt" name="{{ problem['hash'] | safe }}solvemodalattempt" type="text" placeholder="fl@g" class="input-medium" required>
+                    
+                  </div>
+                </div>
+
+                <!-- Textarea -->
+                <div class="control-group">
+                  <label class="control-label" for="textarea">Explanation</label>
+                  <div class="controls">                     
+                    <textarea id="{{ problem['hash'] | safe }}solvemodalExplanation" name="textarea" rows = "5" cols = "60" required></textarea>
+                  </div>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-success" data-dismiss="modal" id="{{ problem['hash']|safe }}solvemodalYesButton">Enter Flag</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    $("#{{ problem['hash'] | safe }}solvemodalYesButton").click(function () {
+        gradeProblem("{{ problem['title']|safe }}",$("#{{ problem['hash']|safe }}solvemodalattempt").val(),$("#{{ problem['hash']|safe }}solvemodalExplanation").val());
+    })
+    </script>
+    <div class="modal fade" id="{{ problem['hash']|safe }}buymodal" tabindex="-1" role="dialog" aria-labelledby="{{ problem['hash']|safe }}buymodalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="{{ problem['hash']|safe }}buymodalLabel">Buy "{{ problem['title'] | safe }}"</h4>
+          </div>
+          <div class="modal-body">
+            Are you sure you would like to buy the flag for "{{ problem['title'] | safe }}" for {{ problem['buy_for_points'] | safe }} points?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal" id="{{ problem['hash']|safe }}buymodalYesButton">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    $("#{{ problem['hash']|safe }}buymodalYesButton").click(function () {
+        buyProblem("{{ problem['title']|safe }}");
+    })
+    </script>
+    {% endfor %}
+</div>
+
+    <div id = "footer"></div>
+</body>
+
+    <script src="/static/js/external/bootstrap.min.js"></script>
+    <script src="/static/js/external/ripples.min.js"></script>
+    <script src="/static/js/external/material.min.js"></script>
+    <script src = "static/js/custom/production/navload.js"></script>
+<script src="/static/js/external/notify.min.js"></script>
+<script src="/static/js/external/springy.min.js"></script>
+<script src="/static/js/external/springyui.min.js"></script>
+<script>
+function respondCanvasContainer(){
+    var c = $('#problemhierarchy');
+    var ct = c.get(0).getContext('2d');
+    var container = $(c).parent();
+    var ca = $('#problemlocalhierarchy');
+    var cta = ca.get(0).getContext('2d');
+    var containera = $(ca).parent();
+    $(window).resize( respondCanvas );
+    function respondCanvas(){ 
+        c.attr('width', $(container).width() );
+        c.attr('height', "800px");
+        ca.attr('width', $(containera).width() );
+        ca.attr('height', "800px");
+    }
+    respondCanvas();
+}
+$(document).ready( function() {
+    respondCanvasContainer();
+    $("#hierarchy_local_viewer_container").hide();  
+});
+</script>
+<script>
+var localData = $("#hierarchy_local_viewer_container").html();
+
+function returnButtonHandler() {
+    $("#hierarchy_local_viewer_container").hide();
+    $("#hierarchy_div").show();
+    respondCanvasContainer();
+}
+
+jQuery(function() {
+var graph = new Springy.Graph();
+
+function nodePopulate() {
+    //Show problem information
+    $("#hierarchy_problem_viewer").html("");
+    $("#" + this.hash + "panel").clone().appendTo("#hierarchy_problem_viewer");
+    $("#hierarchy_problem_viewer").find("#" + this.hash + "panel").find("#" + this.hash).collapse("show");
+    //Show problem local graph
+    var localGraph = new Springy.Graph();
+    var localEdges = {};
+    var localNodes = {};
+    for(var edge in edges) {
+        var parent = edge.toString().split("\t")[0];
+        var child = edge.toString().split("\t")[1];
+        if (this.label == parent) {
+            var childNode = nodes[child];
+            if (localNodes[parent] == undefined)
+                localNodes[parent] = localGraph.newNode({label: parent, color: this.color, hash: this.hash, ondoubleclick: nodePopulate});
+            if (localNodes[child] == undefined)
+                localNodes[child] = localGraph.newNode({label: child, color: childNode.data.color, hash: childNode.data.hash, ondoubleclick: nodePopulate});
+            if (localNodes[parent + "\t" + child] == undefined)
+                localEdges[parent + "\t" + child] = localGraph.newEdge(localNodes[parent],localNodes[child]);
+        }
+        else if (this.label == child) {
+            var parentNode = nodes[parent];
+            if (localNodes[child] == undefined)
+                localNodes[child] = localGraph.newNode({label: child, color: this.color, hash: this.hash, ondoubleclick: nodePopulate});
+            if (localNodes[parent] == undefined)
+                localNodes[parent] = localGraph.newNode({label: parent, color: parentNode.data.color, hash: parentNode.data.hash, ondoubleclick: nodePopulate});
+            if (localNodes[parent + "\t" + child] == undefined)
+                localEdges[parent + "\t" + child] = localGraph.newEdge(localNodes[parent],localNodes[child]);
+        }
+        else if (localNodes[this.label] == undefined) {
+            localNodes[this.label] = localGraph.newNode({label: this.label, color: this.color, hash: this.hash, ondoubleclick: nodePopulate});
+        }
+    }
+    $("#hierarchy_div").hide();
+    $("#hierarchy_local_viewer_container").show();
+    $("#hierarchy_local_viewer_container").html(localData);
+    var localSpringy = jQuery("#problemlocalhierarchy").springy({graph: localGraph});
+    respondCanvasContainer();
+}
+
+var nodes = {};
+var edges = {};
+
+{% for problem in allproblems %}nodes["{{problem['title']}}"] = graph.newNode({label: "{{problem['title']}}", color: {% if problem["buyed"] %}"#ffbf00"{% elif problem["solved"] %}"#009e3a"{% elif problem["unlocked"] %} "#ff0000" {% else %} "#000000" {% endif %},hash: "{{problem['hash']}}",ondoubleclick: nodePopulate});
+{% endfor %}
+{% for problem in allproblems %}{% for parent in problem["problem_parents"] -%}edges["{{parent}}\t{{problem['title']}}"] = graph.newEdge(nodes["{{parent}}"],nodes["{{problem['title']}}"]);
+{% endfor %}{% endfor %}
+
+var springy = jQuery('#problemhierarchy').springy({graph: graph});
+});
+</script>
+<script src="/static/js/custom/production/problemeffects.js"></script> 
+</html>

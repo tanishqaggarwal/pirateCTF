@@ -1,0 +1,6 @@
+{% if valid %}
+<p>The cookie: {{ cookie|safe }}</p>
+{% else %}
+<p>Hey, that cookie you provided isn't actually a valid cookie.</p>
+{% endif %}
+<br /><br /><a href = "/dev/cookiedecoder"><button>Back to Cookie Decoder</button></a>

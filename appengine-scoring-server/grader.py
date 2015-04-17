@@ -5,6 +5,7 @@ from db import *
 from securefunctions import *
 import json
 from google.appengine.ext import ndb
+from google.appengine.ext import deferred
 from google.appengine.api import memcache
 from google.appengine.api import users
 import datetime
@@ -99,10 +100,11 @@ class Grader(webapp2.RequestHandler):
 
                 teamselect.problems_attempted = problemattempts
                 teamselect.points            += aproblem.points
+                teamselect.last_successful    = datetime.datetime.now()
                 teamselect.put()
                 self.response.out.write("solved")
 
-                delete_memcache_keys(userobject, problem, aproblem.problem_children)                
+                deferred.defer(delete_memcache_keys,userobject,problem,aproblem.problem_children)            
             else:
                 problemattempts = teamselect.problems_attempted
                 for anyproblem in problemattempts:
@@ -179,11 +181,12 @@ class Buyer(webapp2.RequestHandler):
 
             teamselect.problems_attempted.append(theproblem)
             teamselect.successful_attempts.append(theproblem)
+            teamselect.last_successful = datetime.datetime.now()
 
             teamselect.points -= aproblem.buy_for_points
             teamselect.points += aproblem.points
             teamselect.put()
             self.response.out.write(aproblem.flag)
 
-            delete_memcache_keys(userobject,problem,aproblem.problem_children)
+            deferred.defer(delete_memcache_keys,userobject,problem,aproblem.problem_children)
                     

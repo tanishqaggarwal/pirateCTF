@@ -10,7 +10,12 @@
 
     <title>Scoreboard | PirateCTF 2015</title>
 
+
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/fullpage.css" rel="stylesheet">
+    <link href="/static/css/roboto.min.css" rel="stylesheet">
+    <link href="/static/css/material.min.css" rel="stylesheet">
+    <link href="/static/css/ripples.min.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -62,12 +67,15 @@
 </body>
 
 <script src="/static/js/external/jquery-1.11.2.min.js"></script>
-<script src="/static/js/external/bootstrap.min.js"></script>
-<script src = "/static/js/custom/production/navload.js"></script>
+    <script src="/static/js/external/bootstrap.min.js"></script>
+    <script src="/static/js/external/ripples.min.js"></script>
+    <script src="/static/js/external/material.min.js"></script>
+    <script src = "static/js/custom/production/navload.js"></script>
 <script src="/static/js/custom/production/scoreboard.js"></script>
 
 <script type = "text/javascript">
     var scoreboarddata = JSON.parse({{ data|safe }});
+    console.log(scoreboarddata);
     var thescoreboard = new ScoreBoard(scoreboarddata,"scoreboard","chart","solvedtable");
     thescoreboard.producetable();
     thescoreboard.producechart();

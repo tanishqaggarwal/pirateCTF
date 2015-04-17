@@ -236,13 +236,8 @@ class Scoreboard(webapp2.RequestHandler):
                         "teamtype" : team.teamtype,
                         "school" : team.school,
                         "points" : team.points,
-                        "time" : "",
+                        "time" : team.last_successful,
                     }
-                    highesttime = datetime.datetime(1900,1,1,0,0,0,0)
-                    for attempts in team.successful_attempts:
-                        if highesttime < attempts.time:
-                            highesttime = attempts.time
-                    teamdat["time"] = timeformat(highesttime)
                     memcache.add("teaminfoforteam" + team.teamname,teamdat)
                     data["data"].append(teamdat)
             memcache.add('scoreboard',data)
@@ -412,7 +407,7 @@ class Login(webapp2.RequestHandler):
                     self.response.set_cookie("userobject",encrypt(json.dumps({"username" : username, "teamname" : teamname, "classname" : classname})))
                     redirectspace = self.request.cookies.get("redirectto")
                     if not redirectspace:
-                        redirectspace = "/problems"
+                        redirectspace = "/"
                     self.response.delete_cookie("redirectto")
                     self.redirect(redirectspace)
                 else:

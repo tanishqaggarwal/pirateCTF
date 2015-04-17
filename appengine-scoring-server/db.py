@@ -2,6 +2,7 @@
 #This software platform is distributed under the MIT license. A copy of the license can be found in license.md.
 
 from google.appengine.ext import ndb
+import datetime
 
 class ProblemAttempts(ndb.Model):
 	attempt    = ndb.StringProperty(required=True)
@@ -14,11 +15,13 @@ class ProblemAttempts(ndb.Model):
 	buyed      = ndb.BooleanProperty(default=False)
 
 class Teams(ndb.Model):
+	created             = ndb.DateTimeProperty(auto_now_add=True)
 	teamname            = ndb.StringProperty(required=True)
 	school              = ndb.StringProperty(required=True)
 	points 			    = ndb.IntegerProperty(default=0)
 	problems_attempted  = ndb.StructuredProperty(ProblemAttempts,repeated=True)
 	successful_attempts = ndb.StructuredProperty(ProblemAttempts,repeated=True)
+	last_successful     = ndb.DateTimeProperty(default=datetime.datetime(1900,1,1,0,0,0,0))
 	adult_coordinator   = ndb.StringProperty(required=True)
 	postal_address      = ndb.TextProperty(required=True)
 	phone               = ndb.StringProperty(required=True)
@@ -29,6 +32,7 @@ class Teams(ndb.Model):
 	classname           = ndb.StringProperty(default="defaultclass")
 
 class Users(ndb.Model):
+	created   = ndb.DateTimeProperty(auto_now_add=True)
 	user      = ndb.UserProperty(required=True)
 	username  = ndb.StringProperty(required=True) #extracted from User object as the user's name
 	teamname  = ndb.StringProperty(required=True) #reference team name
@@ -45,6 +49,7 @@ class MicroUpdates(ndb.Model):
 	time   = ndb.DateTimeProperty(auto_now_add=True)
 
 class Problems(ndb.Model):
+	created   = ndb.DateTimeProperty(auto_now_add=True)
 	title            = ndb.StringProperty(required=True)
 	text             = ndb.TextProperty(required=True)
 	number_solved    = ndb.IntegerProperty(default=0)

@@ -7,7 +7,7 @@ import jinja2
 import os
 import math
 import logging
-from random import randomint
+from random import randint
 from securefunctions import *
 
 import pickle
@@ -35,23 +35,23 @@ def graderfunction(flag,x):
 class ProduceTestData(webapp2.RequestHandler):
     def get(self):
         if "Development" in os.environ['SERVER_SOFTWARE']:
-            logging.info("currently generating data")
+            logging.info("Welcome to the PirateCTF development data generation service.")
+            logging.info("Currently generating data.")
             insertion = [] 
             insertion += self.produce_sample_problems()
-            insertion += self.produce_sample_classes()
             insertion += self.produce_sample_teams()
             insertion += self.produce_sample_users()
             insertion += self.produce_sample_updates()
             insertion += self.produce_sample_microupdates()
-            logging.info("data generated, beginning insertion into DB")
+            logging.info("Data generated, beginning insertion into datastore.")
             ndb.put_multi(insertion)
-            logging.info("data inserted into db")
-            self.response.out.write("test data produced")
+            logging.info("Data inserted into data store.")
+            self.response.out.write(jinja_environment.get_template("testdataproduced.html").render())
         else:
-            self.response.out.write("not on development server")
+            self.response.out.write(jinja_environment.get_template("not_on_dev.html").render())
     def produce_sample_problems(self):
-        problemtypes = ["Forensics","Web Exploit","Binary Exploit","Reverse Engineering","Cryptography","Web Reconnaissance","Master Challenge","Algorithms"]
-        logging.info("generating problems")
+        problemtypes = ["Forensics","Web Exploit","Binary Exploit","Reverse Engineering","Cryptography","Web Reconnaissance","Algorithms","Master Challenge"]
+        logging.info("Generating problems.")
         problems = []
         for x in range(1,NUMBER_PROBLEMS + 1):
             theproblem = Problems()
@@ -62,38 +62,30 @@ class ProduceTestData(webapp2.RequestHandler):
             theproblem.buy_for_points = theproblem.points - 10
             theproblem.graderfunction = pickle.dumps(graderfunction(theproblem.flag,x))
             theproblem.flag = "flag_for_problem_" + str(x)
-            theproblem.problem_type = problemtypes[(x - 1) % 8]
+            theproblem.problem_type = problemtypes[(x - 1) % 7] if float(x) / float(NUMBER_PROBLEMS) < 0.8 else "Master Challenge"
+
+            if x >= 3:
+                theproblem_num_parents = randint(0,3)
+            else:
+                theproblem_num_parents = randint(0,x - 1)
+
+            parent_ids = []
+            for y in range(0,theproblem_num_parents):
+                parentIn = False
+                while not parentIn:
+                    parent_id = "Problem " + str(randint(1,x))
+                    if parent_id not in parent_ids:
+                        parent_ids.append(parent_id)
+                        parentIn = True
+
+            theproblem.problem_parents = parent_ids
+
             problems.append(theproblem)
 
-        parent_structure = []
-        for x in range(1,NUMBER_PROBLEMS + 1):
-            parent_structure.append({
-                "parent": x,
-                "children": [],
-                })
-        for x in range(1,NUMBER_PROBLEMS + 1):
-            num_parents = randint(1,x)
-            parentsFound = 0
-            for parent in parent_structure:
-                if x in parent["children"]:
-                    parentsFound += 1
-                else:
-                    if parentsFound < num_parents:
-                        parent["children"].append(x)
-                        parentsFound += 1
-
-        for x in range(1,NUMBER_PROBLEMS + 1):
-            set_parents = []
-            for parent in parent_structure:
-                if x in parent["children"]:
-                    set_parents.append(parent["parent"])
-            problems[x].problem_parents = set_parents
-            problems[x].problem_children = parent_structure[x]["children"]
-
-        logging.info("problems generated")
+        logging.info("Problems generated.")
         return problems
     def produce_sample_users(self):
-        logging.info("generating users")
+        logging.info("Generating users.")
         theusers = []
         for x in range(1,NUMBER_USERS + 1):
             theuser = users.User("pirateuser" + str(x) + "@piratectf.com")
@@ -101,10 +93,10 @@ class ProduceTestData(webapp2.RequestHandler):
             userobject.teamname = "Team " + str(((x - 1) % NUMBER_TEAMS) + 1)
             userobject.classname = "Class " + str(((x - 1) % NUMBER_CLASSES) + 1)
             theusers.append(userobject)
-        logging.info("users generated")
+        logging.info("Users generated.")
         return theusers
     def produce_sample_teams(self):
-        logging.info("generating teams")
+        logging.info("Generating teams.")
         teams = []
         for x in range(1,NUMBER_TEAMS + 1):
             theteam = Teams()
@@ -119,27 +111,27 @@ class ProduceTestData(webapp2.RequestHandler):
             theteam.passphrase        = "passphrase" + str(x)
             theteam.teamtype          = "Competitive" if x % 1000 != 0 else "Observer"
             teams.append(theteam)
-        logging.info("teams generated")
+        logging.info("Teams generated.")
         return teams
     def produce_sample_updates(self):
-        logging.info("generating updates")
+        logging.info("Generating updates.")
         updates = []
         for x in range(1,NUMBER_UPDATES + 1):
             theupdate = Updates()
             theupdate.title = "Update " + str(x)
             theupdate.update = "Text for update " + str(x)
             updates.append(theupdate)
-        logging.info("updates generated")
+        logging.info("Updates generated.")
         return updates
     def produce_sample_microupdates(self):
-        logging.info("generating microupdates")
+        logging.info("Generating microupdates.")
         microupdates = []
         for x in range(1,NUMBER_MICROUPDATES + 1):
             themicroupdate = MicroUpdates()
             themicroupdate.title = "Micro Update " + str(x)
             themicroupdate.update = "Text for microupdate " + str(x)
             microupdates.append(themicroupdate)
-        logging.info("microupdates generated")
+        logging.info("Microupdates generated.")
         return microupdates
 
 class CookieProducer(webapp2.RequestHandler):
@@ -152,10 +144,11 @@ class CookieProducer(webapp2.RequestHandler):
         if "Development" in os.environ["SERVER_SOFTWARE"]:
             data = self.request.get("userobject")
             thecookie = encrypt(data)
-            self.response.out.write("The cookie: " + thecookie)
-            self.response.out.write("""<br /><br /><a href = "/dev/cookieproducer"><button>Back to Cookie Producer</button></a>""")
+            self.response.out.write(jinja_environment.get_template("cookieproducer_action.html").render({
+                "cookie" : thecookie,
+            }))
         else:
-            self.response.out.write("not on development server")
+            self.response.out.write(jinja_environment.get_template("not_on_dev.html").render())
 
 class CookieDecoder(webapp2.RequestHandler):
     def get(self):
@@ -168,11 +161,15 @@ class CookieDecoder(webapp2.RequestHandler):
             data = self.request.get("userobject")
             try:
                 thecookie = decrypt(data)
-                self.response.out.write("The decrypted data: " + thecookie)
+                self.response.out.write(jinja_environment.get_template("cookiedecoder_action.html").render({
+                        "valid" : True,
+                        "cookie" : thecookie,
+                    }))
             except:
-                self.response.out.write("Hey, that data you provided wasn't actually valid.")
-            self.response.out.write("""<br /><br /><a href = "/dev/cookiedecoder"><button>Back to Cookie Decoder</button></a>""")
+                self.response.out.write(jinja_environment.get_template("cookiedecoder_action.html").render({
+                        "valid" : False,
+                    }))
         else:
-            self.response.out.write("not on development server")
+            self.response.out.write(jinja_environment.get_template("not_on_dev.html").render())
 
 
